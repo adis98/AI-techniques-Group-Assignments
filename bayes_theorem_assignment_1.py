@@ -57,7 +57,7 @@ if __name__ == '__main__':
     priors = [0.25, 0.25, 0.25, 0.25]
     obs = ["yellow", "red", "blue", "black", "white"]
     # e.g. likelihood[0][1] corresponds to the likehood of Bowl1 and vanilla, or 35/50
-    likelihood = [[0.05 , 0.1, 0,4, 0.25, 0.2], [0.1, 0.2, 0.4, 0.2, 0.1], [0.2, 0.4, 0.25, 0.1, 0.05], [0.3, 0.5, 0.125, 0.05, 0.025]]
+    likelihood = [[0.05 , 0.1, 0.4, 0.25, 0.2], [0.1, 0.2, 0.4, 0.2, 0.1], [0.2, 0.4, 0.25, 0.1, 0.05], [0.3, 0.5, 0.125, 0.05, 0.025]]
     b = Bayes(hypos, priors, obs, likelihood)
 
     l = b.likelihood("red", "Expert")
