@@ -1,5 +1,10 @@
 #primary class for calculating probabilties using Bayes
 
+def write_answer(txt, answer):
+    txt.write(str(answer))
+    txt.write("\n")
+
+
 class Bayes:
     
     def __init__(self, hypo=[], priors=[], obs=[], lkhood=[]): #Constructor for accepting inputs in a specified format
@@ -34,11 +39,14 @@ class Bayes:
         norm_const = sum(posteriors)
         return [round(posterior/norm_const, 3) for posterior in posteriors]
 
+
 if __name__ == '__main__':
+    txt = open("group_60.txt", "w")
+    # just use write_answer(txt, [the answer])
     hypos = ["Bowl1", "Bowl2"]
     priors = [0.5, 0.5]
     obs = ["chocolate", "vanilla"]
-    # e.g. likelihood[0][1] corresponds to the likehood of Bowl1 and vanilla, or 35/50
+    # e.g. likelihood[0][1] corresponds to the likelyhood of Bowl1 and vanilla, or 35/50
     likelihood = [[15/50, 35/50], [30/50, 20/50]]
     b = Bayes(hypos, priors, obs, likelihood)
     l = b.likelihood("chocolate", "Bowl2")
@@ -71,6 +79,9 @@ if __name__ == '__main__':
 
     posteriors = b.compute_posterior(["yellow", "white", "blue", "red", "red", "blue"])
     print("posteriors for observed sequence are ", posteriors)
+
+
+    txt.close()
 
 
 
