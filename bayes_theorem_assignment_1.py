@@ -43,43 +43,32 @@ class Bayes:
 if __name__ == '__main__':
     txt = open("group_60.txt", "w")
     # just use write_answer(txt, [the answer])
-    hypos = ["Bowl1", "Bowl2"]
-    priors = [0.5, 0.5]
-    obs = ["chocolate", "vanilla"]
-    # e.g. likelihood[0][1] corresponds to the likelyhood of Bowl1 and vanilla, or 35/50
-    likelihood = [[15/50, 35/50], [30/50, 20/50]]
-    b = Bayes(hypos, priors, obs, likelihood)
-    l = b.likelihood("chocolate", "Bowl2")
-    print("likelihood(chocolate, Bowl2) = %s " % l)
+    cookie_hypos = ["Bowl1", "Bowl2"]
+    cookie_priors = [0.5, 0.5]
+    cookie_obs = ["chocolate", "vanilla"]
+    cookie_likelihood = [[15 / 50, 35 / 50], [30 / 50, 20 / 50]]
+    cookie_b = Bayes(cookie_hypos, cookie_priors, cookie_obs, cookie_likelihood)
 
-    norm_const = b.norm_constant("chocolate")
-    print('norm_constant, p(chocolate) =',norm_const)
+    q1 = cookie_b.single_posterior_update('vanilla')[0]
+    write_answer(txt, q1)
 
-    posteriors = b.single_posterior_update("chocolate")
-    print("posteriors are ", posteriors)
+    q2 = cookie_b.compute_posterior(['vanilla', 'chocolate'])[1]
+    write_answer(txt, q2)
 
-    posteriors = b.compute_posterior(["chocolate", "vanilla"])
-    print("computed posteriors for chocolate, vanilla are ", posteriors)
 
-    hypos = ["Beginner", "Intermediate", "Advanced", "Expert"]
-    priors = [0.25, 0.25, 0.25, 0.25]
-    obs = ["yellow", "red", "blue", "black", "white"]
+    archer_hypos = ["Beginner", "Intermediate", "Advanced", "Expert"]
+    archer_priors = [0.25, 0.25, 0.25, 0.25]
+    archer_obs = ["yellow", "red", "blue", "black", "white"]
     # e.g. likelihood[0][1] corresponds to the likehood of Bowl1 and vanilla, or 35/50
-    likelihood = [[0.05 , 0.1, 0.4, 0.25, 0.2], [0.1, 0.2, 0.4, 0.2, 0.1], [0.2, 0.4, 0.25, 0.1, 0.05], [0.3, 0.5, 0.125, 0.05, 0.025]]
-    b = Bayes(hypos, priors, obs, likelihood)
+    archer_likelihood = [[0.05 , 0.1, 0.4, 0.25, 0.2], [0.1, 0.2, 0.4, 0.2, 0.1], [0.2, 0.4, 0.25, 0.1, 0.05], [0.3, 0.5, 0.125, 0.05, 0.025]]
+    archer_b = Bayes(archer_hypos, archer_priors, archer_obs, archer_likelihood)
 
-    l = b.likelihood("red", "Expert")
-    print("likelihood(red, Expert) = %s " % l)
+    q3 = archer_b.compute_posterior(['yellow', 'white', 'blue', 'red', 'red', 'blue'])[1]
+    write_answer(txt, q3)
 
-    norm_const = b.norm_constant("red")
-    print('norm_constant, p(red) =', norm_const)
-
-    posteriors = b.single_posterior_update("white")
-    print("single posterior for white is ", posteriors)
-
-    posteriors = b.compute_posterior(["yellow", "white", "blue", "red", "red", "blue"])
-    print("posteriors for observed sequence are ", posteriors)
-
+    temp = archer_b.compute_posterior(['yellow', 'white', 'blue', 'red', 'red', 'blue'])
+    q4 = archer_hypos[temp.index(max(temp))]
+    write_answer(txt, q4)
 
     txt.close()
 
