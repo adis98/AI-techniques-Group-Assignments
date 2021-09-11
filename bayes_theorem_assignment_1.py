@@ -1,5 +1,10 @@
 #primary class for calculating probabilties using Bayes
 
+def write_answer(txt, answer):
+    txt.write(str(answer))
+    txt.write("\n")
+
+
 class Bayes:
     
     def __init__(self, hypo=[], priors=[], obs=[], lkhood=[]): #Constructor for accepting inputs in a specified format
@@ -15,11 +20,11 @@ class Bayes:
         norm_constant = sum([self.likelihood(observation, hypo) * self.priors[self.hypo.index(hypo)] for hypo in self.hypo])
         return round(norm_constant, 3)
 
-    def single_posterior_update(self, observation): #calculates the posterior probabilities for each bowl, given a particular flavour has occurred
+    def single_posterior_update(self, observation, priors): #calculates the posterior probabilities for each bowl, given a particular flavour has occurred
         posteriors = []
         norm_constant = self.norm_constant(observation)
         for bowl in self.hypo:
-            temp = (self.likelihood(observation, bowl)*self.priors[self.hypo.index(bowl)])/norm_constant
+            temp = (self.likelihood(observation, bowl)*priors[self.hypo.index(bowl)])/norm_constant
             temp = round(temp, 3)
             posteriors.append(temp)
         return posteriors
@@ -34,43 +39,38 @@ class Bayes:
         norm_const = sum(posteriors)
         return [round(posterior/norm_const, 3) for posterior in posteriors]
 
+
 if __name__ == '__main__':
-    hypos = ["Bowl1", "Bowl2"]
-    priors = [0.5, 0.5]
-    obs = ["chocolate", "vanilla"]
+    txt = open("group_60.txt", "w")
+    # just use write_answer(txt, [the answer])
+    cookie_hypos = ["Bowl1", "Bowl2"]
+    cookie_priors = [0.5, 0.5]
+    cookie_obs = ["chocolate", "vanilla"]
+    cookie_likelihood = [[15 / 50, 35 / 50], [30 / 50, 20 / 50]]
+    cookie_b = Bayes(cookie_hypos, cookie_priors, cookie_obs, cookie_likelihood)
+
+    q1 = cookie_b.single_posterior_update('vanilla', [0.5, 0.5])[0]
+    write_answer(txt, q1)
+
+    q2 = cookie_b.compute_posterior(['vanilla', 'chocolate'])[1]
+    write_answer(txt, q2)
+
+
+    archer_hypos = ["Beginner", "Intermediate", "Advanced", "Expert"]
+    archer_priors = [0.25, 0.25, 0.25, 0.25]
+    archer_obs = ["yellow", "red", "blue", "black", "white"]
     # e.g. likelihood[0][1] corresponds to the likehood of Bowl1 and vanilla, or 35/50
-    likelihood = [[15/50, 35/50], [30/50, 20/50]]
-    b = Bayes(hypos, priors, obs, likelihood)
-    l = b.likelihood("chocolate", "Bowl2")
-    print("likelihood(chocolate, Bowl2) = %s " % l)
+    archer_likelihood = [[0.05 , 0.1, 0.4, 0.25, 0.2], [0.1, 0.2, 0.4, 0.2, 0.1], [0.2, 0.4, 0.25, 0.1, 0.05], [0.3, 0.5, 0.125, 0.05, 0.025]]
+    archer_b = Bayes(archer_hypos, archer_priors, archer_obs, archer_likelihood)
 
-    norm_const = b.norm_constant("chocolate")
-    print('norm_constant, p(chocolate) =',norm_const)
+    q3 = archer_b.compute_posterior(['yellow', 'white', 'blue', 'red', 'red', 'blue'])[1]
+    write_answer(txt, q3)
 
-    posteriors = b.single_posterior_update("chocolate")
-    print("posteriors are ", posteriors)
+    temp = archer_b.compute_posterior(['yellow', 'white', 'blue', 'red', 'red', 'blue'])
+    q4 = archer_hypos[temp.index(max(temp))]
+    write_answer(txt, q4)
 
-    posteriors = b.compute_posterior(["chocolate", "vanilla"])
-    print("computed posteriors for chocolate, vanilla are ", posteriors)
-
-    hypos = ["Beginner", "Intermediate", "Advanced", "Expert"]
-    priors = [0.25, 0.25, 0.25, 0.25]
-    obs = ["yellow", "red", "blue", "black", "white"]
-    # e.g. likelihood[0][1] corresponds to the likehood of Bowl1 and vanilla, or 35/50
-    likelihood = [[0.05 , 0.1, 0.4, 0.25, 0.2], [0.1, 0.2, 0.4, 0.2, 0.1], [0.2, 0.4, 0.25, 0.1, 0.05], [0.3, 0.5, 0.125, 0.05, 0.025]]
-    b = Bayes(hypos, priors, obs, likelihood)
-
-    l = b.likelihood("red", "Expert")
-    print("likelihood(red, Expert) = %s " % l)
-
-    norm_const = b.norm_constant("red")
-    print('norm_constant, p(red) =', norm_const)
-
-    posteriors = b.single_posterior_update("white")
-    print("single posterior for white is ", posteriors)
-
-    posteriors = b.compute_posterior(["yellow", "white", "blue", "red", "red", "blue"])
-    print("posteriors for observed sequence are ", posteriors)
+    txt.close()
 
 
 
