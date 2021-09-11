@@ -24,7 +24,7 @@ class Bayes:
         posteriors = []
         norm_constant = self.norm_constant(observation)
         for bowl in self.hypo:
-            temp = (self.likelihood(observation, bowl)*self.priors[self.hypo.index(bowl)])/norm_constant
+            temp = (self.likelihood(observation, bowl)*priors[self.hypo.index(bowl)])/norm_constant
             temp = round(temp, 3)
             posteriors.append(temp)
         return posteriors
