@@ -20,7 +20,7 @@ class Bayes:
         norm_constant = sum([self.likelihood(observation, hypo) * self.priors[self.hypo.index(hypo)] for hypo in self.hypo])
         return round(norm_constant, 3)
 
-    def single_posterior_update(self, observation): #calculates the posterior probabilities for each bowl, given a particular flavour has occurred
+    def single_posterior_update(self, observation, priors): #calculates the posterior probabilities for each bowl, given a particular flavour has occurred
         posteriors = []
         norm_constant = self.norm_constant(observation)
         for bowl in self.hypo:
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     cookie_likelihood = [[15 / 50, 35 / 50], [30 / 50, 20 / 50]]
     cookie_b = Bayes(cookie_hypos, cookie_priors, cookie_obs, cookie_likelihood)
 
-    q1 = cookie_b.single_posterior_update('vanilla')[0]
+    q1 = cookie_b.single_posterior_update('vanilla', [0.5, 0.5])[0]
     write_answer(txt, q1)
 
     q2 = cookie_b.compute_posterior(['vanilla', 'chocolate'])[1]
