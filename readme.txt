@@ -1,0 +1,1 @@
+python3 bayes_theorem_assignment_1.py
