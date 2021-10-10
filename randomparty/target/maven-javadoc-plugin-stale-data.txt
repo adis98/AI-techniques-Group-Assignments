@@ -1,0 +1,17 @@
+cmd.exe
+/X
+/C
+"C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\..\bin\javadoc.exe @options @argfile"
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\allclasses-frame.html = 1633698986239
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\allclasses-noframe.html = 1633698986239
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\argfile = 1633698985494
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\constant-values.html = 1633698986219
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\deprecated-list.html = 1633698986239
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\help-doc.html = 1633698986239
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\index-all.html = 1633698986231
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\index.html = 1633698986239
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\options = 1633698985492
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\overview-tree.html = 1633698986231
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\package-list = 1633698986190
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\script.js = 1633698986249
+C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty\target\apidocs\stylesheet.css = 1633698986249

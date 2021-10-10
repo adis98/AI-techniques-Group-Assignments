@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="15" failures="0" name="collabai.group60.Group60PartyTest" time="0.241" errors="0" skipped="0">
+  <properties>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="sun.boot.library.path" value="C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\bin"/>
+    <property name="java.vm.version" value="25.265-b01"/>
+    <property name="java.vm.vendor" value="AdoptOpenJDK"/>
+    <property name="maven.multiModuleProjectDirectory" value="C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.script" value=""/>
+    <property name="user.country" value="IN"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="C:\Users\adity\Documents\Course_stuff\AI techniques\ass2\exampleparty\randomparty"/>
+    <property name="java.runtime.version" value="1.8.0_265-b01"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="C:\Users\adity\AppData\Local\Temp\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="classworlds.conf" value="C:\Users\adity\Documents\apache-maven-3.8.3-bin\apache-maven-3.8.3\bin\m2.conf"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Users\adity\AppData\Local\Programs\Python\Python39;C:\Users\adity\AppData\Local\Microsoft\WindowsApps;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\bin;C:\Program Files\PuTTY\;C:\Program Files\Git\cmd;C:\Program Files\Git\bin;C:\Users\adity\AppData\Local\Programs\Python\Python39\Scripts;C:\Users\adity\Documents\apache-maven-3.8.3-bin\apache-maven-3.8.3\bin;C:\Users\adity\AppData\Local\Microsoft\WindowsApps;;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.2.2\bin;;."/>
+    <property name="maven.conf" value="C:\Users\adity\Documents\apache-maven-3.8.3-bin\apache-maven-3.8.3/conf"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.0"/>
+    <property name="library.jansi.path" value="C:\Users\adity\Documents\apache-maven-3.8.3-bin\apache-maven-3.8.3\lib\jansi-native"/>
+    <property name="user.home" value="C:\Users\adity"/>
+    <property name="user.timezone" value="Europe/Berlin"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="user.name" value="adity"/>
+    <property name="java.class.path" value="C:\Users\adity\Documents\apache-maven-3.8.3-bin\apache-maven-3.8.3\boot\plexus-classworlds-2.6.0.jar"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean package"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.8.0_265"/>
+    <property name="java.ext.dirs" value="C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\ext;C:\Windows\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\resources.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\rt.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\sunrsasign.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\jsse.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\jce.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\charsets.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\lib\jfr.jar;C:\Users\adity\.furhat\launcher\JDK\jdk8u265-b01\jre\classes"/>
+    <property name="sun.stderr.encoding" value="cp437"/>
+    <property name="java.vendor" value="AdoptOpenJDK"/>
+    <property name="maven.home" value="C:\Users\adity\Documents\apache-maven-3.8.3-bin\apache-maven-3.8.3"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.stdout.encoding" value="cp437"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+  </properties>
+  <testcase classname="collabai.group60.Group60PartyTest" name="smokeTest" time="0.131"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testInformSettings" time="0.016"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testInformAndConnection" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testAgentsUpdatesMOPACProgress" time="0.032"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testGetCapabilities" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testAgentLogsFinal" time="0.031"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="getDescriptionTest" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testAgentsUpdatesSAOPProgress" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testOtherWalksAway" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testAgentHasFirstTurn" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testAgentAccepts" time="0.015"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testInformConnection" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testVoting" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="getCapabilitiesTest" time="0"/>
+  <testcase classname="collabai.group60.Group60PartyTest" name="testVotingWithValue" time="0.016"/>
+</testsuite>
