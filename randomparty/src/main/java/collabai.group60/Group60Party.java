@@ -2,12 +2,7 @@ package collabai.group60;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -21,6 +16,8 @@ import geniusweb.actions.VoteWithValue;
 import geniusweb.actions.Votes;
 import geniusweb.actions.VotesWithValue;
 import geniusweb.bidspace.AllPartialBidsList;
+import geniusweb.bidspace.pareto.GenericPareto;
+import geniusweb.bidspace.pareto.ParetoLinearAdditive;
 import geniusweb.inform.ActionDone;
 import geniusweb.inform.Finished;
 import geniusweb.inform.Inform;
@@ -34,6 +31,7 @@ import geniusweb.party.Capabilities;
 import geniusweb.party.DefaultParty;
 import geniusweb.profile.PartialOrdering;
 import geniusweb.profile.Profile;
+import geniusweb.profile.utilityspace.LinearAdditive;
 import geniusweb.profile.utilityspace.UtilitySpace;
 import geniusweb.profileconnection.ProfileConnectionFactory;
 import geniusweb.profileconnection.ProfileInterface;
@@ -149,11 +147,34 @@ public class Group60Party extends DefaultParty {
 		}
 	}
 
+	//to get the set of bids on ParetoFrontier
+	public Set<Bid> getParetoFrontier(List<UtilitySpace> listOfProfiles) {
+		GenericPareto pareto = new GenericPareto(listOfProfiles);
+		return pareto.getPoints();
+	}
+
+	//to choose from our bidSpace according to the points on ParetoFrontier
+	public Set<Bid> determineBidFromParetoFrontier(Set<Bid> paretoFront, UtilitySpace profile) {
+		Iterator<Bid> itr = paretoFront.iterator();
+		Set<Bid> goodBids = new HashSet<>();
+		while (itr.hasNext()){
+			if(selectBid(itr.next(), profile)){
+				goodBids.add(itr.next());
+			}
+		}
+		return goodBids;
+	}
+
+	//to Check if utility bid is greater than reservation value
+	public boolean selectBid(Bid bid, UtilitySpace profile){
+		return profile.getUtility(bid).doubleValue() > 0.7;
+	}
+
 	/******************* private support funcs ************************/
 
 	/**
 	 * Update {@link #progress}
-	 * 
+	 *
 	 * @param info the received info. Used to determine if this is the last info
 	 *             of the round
 	 */

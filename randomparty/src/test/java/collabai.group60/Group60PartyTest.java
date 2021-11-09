@@ -17,12 +17,15 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
+import geniusweb.issuevalue.DiscreteValue;
+import geniusweb.issuevalue.NumberValue;
+import geniusweb.issuevalue.Value;
+import geniusweb.opponentmodel.FrequencyOpponentModel;
+import geniusweb.profile.utilityspace.UtilitySpace;
+import geniusweb.progress.Progress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,6 +80,16 @@ public class Group60PartyTest {
 	private LinearAdditive profile;
 	private final Parameters parameters = new Parameters();
 
+	private final static String ISS1 = "Brand";
+	private final static String ISS2 = "Harddisk";
+	private static final DiscreteValue I1V1 = new DiscreteValue("Dell");
+	private static final DiscreteValue I1V2 = new DiscreteValue("Macintosh");
+	private static final DiscreteValue I2V1 = new DiscreteValue("128 GB");
+	private static final DiscreteValue I2V2 = new DiscreteValue("512 GB");
+
+	private static Bid bid1;
+	private static Bid bid2;
+
 	@Before
 	public void before() throws JsonParseException, JsonMappingException,
 			IOException, URISyntaxException {
@@ -95,10 +108,98 @@ public class Group60PartyTest {
 				StandardCharsets.UTF_8);
 		profile = (LinearAdditive) jackson.readValue(serialized, Profile.class);
 
+		Map<String, Value> issuevalues = new HashMap<>();
+		issuevalues.put(ISS1, I1V1);
+		issuevalues.put(ISS2, I2V1);
+		bid1 = new Bid(issuevalues);
+
+		issuevalues.put(ISS1, I1V2);
+		issuevalues.put(ISS2, I2V2);
+		bid2 = new Bid(issuevalues);
+
 	}
 
 	@Test
 	public void smokeTest() {
+	}
+
+	@Test
+	public void callGetParetoFrontier() throws Exception {
+		final String profile1 = "src/test/resources/laptopBuyer.json";
+		final String profile2 = "src/test/resources/laptopSeller.json";
+
+		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
+				StandardCharsets.UTF_8);
+		String serialized2 = new String(Files.readAllBytes(Paths.get(profile2)),
+				StandardCharsets.UTF_8);
+		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+		LinearAdditive linearAdd2 = (LinearAdditive) jackson.readValue(serialized2, Profile.class);
+		List<UtilitySpace> listOfProfiles = Arrays.asList(linearAdd1, linearAdd2);
+
+		Group60Party gp = new Group60Party();
+		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		System.out.println(paretoFrontier);
+
+		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
+	}
+
+	@Test
+	public void getParetoFrontierWithFrequencyOpponentModel() throws Exception {
+		final String profile1 = "src/test/resources/laptopBuyer.json";
+
+		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
+				StandardCharsets.UTF_8);
+		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+
+		PartyId partyId = new PartyId("Opponent");
+		Offer offer = new Offer(partyId, bid1);
+		Offer offer1 = new Offer(partyId, bid1);
+		Offer offer2 = new Offer(partyId, bid2);
+
+
+		FrequencyOpponentModel opp1 = new FrequencyOpponentModel()
+				.with(linearAdd1.getDomain(),null) //Always initialize with the domain and reservation bid
+				.with(offer,progress)
+				.with(offer1,progress)
+				.with(offer2,progress);//Whenever we get an offer we apply this to the corresponent opponent.
+
+		FrequencyOpponentModel opp2 = new FrequencyOpponentModel()
+				.with(linearAdd1.getDomain(),null) //Always initialize with the domain and reservation bid
+				.with(offer2,progress)
+				.with(offer1,progress)
+				.with(offer2,progress);//Whenever we get an offer we apply this to the corresponent opponent.
+
+		Group60Party gp = new Group60Party();
+		List<UtilitySpace> listOfProfiles = Arrays.asList(opp1, opp2);
+		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		System.out.println(paretoFrontier);
+		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
+	}
+
+	@Test
+	public void getFrequencyOpponentModelsUtilities() throws IOException {
+		final String profile1 = "src/test/resources/laptopBuyer.json";
+
+		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
+				StandardCharsets.UTF_8);
+		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+
+		PartyId partyId = new PartyId("Opponent");
+		Offer offer = new Offer(partyId, bid1);
+		Offer offer1 = new Offer(partyId, bid1);
+		Offer offer2 = new Offer(partyId, bid2);
+
+
+		FrequencyOpponentModel opp1 = new FrequencyOpponentModel()
+				.with(linearAdd1.getDomain(),null) //Always initialize with the domain and reservation bid
+				.with(offer,progress) //Whenever we get an offer we apply this to the corresponent opponent.
+				.with(offer1,progress)
+				.with(offer2,progress); //In this case, the opponent has made the same bid twice and another bid 1 more time
+
+		System.out.println(opp1.getUtility(bid1));
+		System.out.println(opp1.getUtility(bid2)); //This value is half of the first one because we only used it once
+													//They don't add up to one because in both cases we only use 2 issues.
+
 	}
 
 	@Test
