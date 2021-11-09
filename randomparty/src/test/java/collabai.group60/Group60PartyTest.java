@@ -24,6 +24,7 @@ import geniusweb.issuevalue.DiscreteValue;
 import geniusweb.issuevalue.NumberValue;
 import geniusweb.issuevalue.Value;
 import geniusweb.opponentmodel.FrequencyOpponentModel;
+import geniusweb.profile.utilityspace.UtilitySpace;
 import geniusweb.progress.Progress;
 import org.junit.Before;
 import org.junit.Test;
@@ -133,12 +134,45 @@ public class Group60PartyTest {
 				StandardCharsets.UTF_8);
 		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
 		LinearAdditive linearAdd2 = (LinearAdditive) jackson.readValue(serialized2, Profile.class);
-		List<LinearAdditive> listOfProfiles = Arrays.asList(linearAdd1, linearAdd2);
+		List<UtilitySpace> listOfProfiles = Arrays.asList(linearAdd1, linearAdd2);
 
 		Group60Party gp = new Group60Party();
 		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
 		System.out.println(paretoFrontier);
 
+		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
+	}
+
+	@Test
+	public void getParetoFrontierWithFrequencyOpponentModel() throws Exception {
+		final String profile1 = "src/test/resources/laptopBuyer.json";
+
+		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
+				StandardCharsets.UTF_8);
+		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+
+		PartyId partyId = new PartyId("Opponent");
+		Offer offer = new Offer(partyId, bid1);
+		Offer offer1 = new Offer(partyId, bid1);
+		Offer offer2 = new Offer(partyId, bid2);
+
+
+		FrequencyOpponentModel opp1 = new FrequencyOpponentModel()
+				.with(linearAdd1.getDomain(),null) //Always initialize with the domain and reservation bid
+				.with(offer,progress)
+				.with(offer1,progress)
+				.with(offer2,progress);//Whenever we get an offer we apply this to the corresponent opponent.
+
+		FrequencyOpponentModel opp2 = new FrequencyOpponentModel()
+				.with(linearAdd1.getDomain(),null) //Always initialize with the domain and reservation bid
+				.with(offer2,progress)
+				.with(offer1,progress)
+				.with(offer2,progress);//Whenever we get an offer we apply this to the corresponent opponent.
+
+		Group60Party gp = new Group60Party();
+		List<UtilitySpace> listOfProfiles = Arrays.asList(opp1, opp2);
+		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		System.out.println(paretoFrontier);
 		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
 	}
 

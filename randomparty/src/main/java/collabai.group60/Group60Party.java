@@ -16,6 +16,7 @@ import geniusweb.actions.VoteWithValue;
 import geniusweb.actions.Votes;
 import geniusweb.actions.VotesWithValue;
 import geniusweb.bidspace.AllPartialBidsList;
+import geniusweb.bidspace.pareto.GenericPareto;
 import geniusweb.bidspace.pareto.ParetoLinearAdditive;
 import geniusweb.inform.ActionDone;
 import geniusweb.inform.Finished;
@@ -147,13 +148,13 @@ public class Group60Party extends DefaultParty {
 	}
 
 	//to get the set of bids on ParetoFrontier
-	public Set<Bid> getParetoFrontier(List<LinearAdditive> listOfProfiles) {
-		ParetoLinearAdditive pareto = new ParetoLinearAdditive(listOfProfiles);
+	public Set<Bid> getParetoFrontier(List<UtilitySpace> listOfProfiles) {
+		GenericPareto pareto = new GenericPareto(listOfProfiles);
 		return pareto.getPoints();
 	}
 
 	//to choose from our bidSpace according to the points on ParetoFrontier
-	public Set<Bid> determineBidFromParetoFrontier(Set<Bid> paretoFront, LinearAdditive profile) {
+	public Set<Bid> determineBidFromParetoFrontier(Set<Bid> paretoFront, UtilitySpace profile) {
 		Iterator<Bid> itr = paretoFront.iterator();
 		Set<Bid> goodBids = new HashSet<>();
 		while (itr.hasNext()){
@@ -165,7 +166,7 @@ public class Group60Party extends DefaultParty {
 	}
 
 	//to Check if utility bid is greater than reservation value
-	public boolean selectBid(Bid bid, LinearAdditive profile){
+	public boolean selectBid(Bid bid, UtilitySpace profile){
 		return profile.getUtility(bid).doubleValue() > 0.7;
 	}
 
@@ -173,7 +174,7 @@ public class Group60Party extends DefaultParty {
 
 	/**
 	 * Update {@link #progress}
-	 * 
+	 *
 	 * @param info the received info. Used to determine if this is the last info
 	 *             of the round
 	 */
