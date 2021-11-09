@@ -2,12 +2,7 @@ package collabai.group60;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -151,9 +146,27 @@ public class Group60Party extends DefaultParty {
 		}
 	}
 
+	//to get the set of bids on ParetoFrontier
 	public Set<Bid> getParetoFrontier(List<LinearAdditive> listOfProfiles) {
 		ParetoLinearAdditive pareto = new ParetoLinearAdditive(listOfProfiles);
 		return pareto.getPoints();
+	}
+
+	//to choose from our bidSpace according to the points on ParetoFrontier
+	public Set<Bid> determineBidFromParetoFrontier(Set<Bid> paretoFront, LinearAdditive profile) {
+		Iterator<Bid> itr = paretoFront.iterator();
+		Set<Bid> goodBids = new HashSet<>();
+		while (itr.hasNext()){
+			if(selectBid(itr.next(), profile)){
+				goodBids.add(itr.next());
+			}
+		}
+		return goodBids;
+	}
+
+	//to Check if utility bid is greater than reservation value
+	public boolean selectBid(Bid bid, LinearAdditive profile){
+		return profile.getUtility(bid).doubleValue() > 0.7;
 	}
 
 	/******************* private support funcs ************************/

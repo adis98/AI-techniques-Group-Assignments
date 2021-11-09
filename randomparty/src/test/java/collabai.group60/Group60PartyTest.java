@@ -17,10 +17,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 import org.junit.Before;
@@ -115,8 +112,12 @@ public class Group60PartyTest {
 		List<LinearAdditive> listOfProfiles = Arrays.asList(linearAdd1, linearAdd2);
 
 		Group60Party gp = new Group60Party();
-		System.out.println(gp.getParetoFrontier(listOfProfiles));
+		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		System.out.println(paretoFrontier);
+
+		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
 	}
+
 	@Test
 	public void getDescriptionTest() {
 		assertNotNull(party.getDescription());
