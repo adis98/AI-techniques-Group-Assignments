@@ -20,6 +20,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 
+import geniusweb.issuevalue.DiscreteValue;
+import geniusweb.issuevalue.NumberValue;
+import geniusweb.issuevalue.Value;
+import geniusweb.opponentmodel.FrequencyOpponentModel;
+import geniusweb.progress.Progress;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,6 +79,19 @@ public class Group60PartyTest {
 	private LinearAdditive profile;
 	private final Parameters parameters = new Parameters();
 
+	private final static String ISS1 = "issue1";
+	private final static String ISS2 = "issue2";
+	private static final DiscreteValue I1V1 = new DiscreteValue("i1v1");
+	private static final DiscreteValue I1V2 = new DiscreteValue("i1v2");
+	private static final DiscreteValue I2V1 = new DiscreteValue("i2v1");
+	private static final DiscreteValue I2V2 = new DiscreteValue("i2v2");
+	private static final DiscreteValue I1V2b = new DiscreteValue("i1v2b");
+
+	private static Bid bid1;
+	private static Bid bid2;
+	private static Bid bid3;
+
+
 	@Before
 	public void before() throws JsonParseException, JsonMappingException,
 			IOException, URISyntaxException {
@@ -91,6 +109,19 @@ public class Group60PartyTest {
 		String serialized = new String(Files.readAllBytes(Paths.get(PROFILE)),
 				StandardCharsets.UTF_8);
 		profile = (LinearAdditive) jackson.readValue(serialized, Profile.class);
+
+		Map<String, Value> issuevalues = new HashMap<>();
+		issuevalues.put(ISS1, I1V1);
+		issuevalues.put(ISS2, new NumberValue(new BigDecimal("1.2")));
+		bid1 = new Bid(issuevalues);
+
+		issuevalues.put(ISS1, I1V1);
+		issuevalues.put(ISS2, new NumberValue(new BigDecimal("1.5")));
+		bid2 = new Bid(issuevalues);
+
+		issuevalues.put(ISS1, I1V2);
+		issuevalues.put(ISS2, new NumberValue(new BigDecimal("1.5")));
+		bid3 = new Bid(issuevalues);
 
 	}
 
@@ -116,6 +147,22 @@ public class Group60PartyTest {
 		System.out.println(paretoFrontier);
 
 		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
+	}
+
+	@Test
+	public void getFrequencyOpponentModelsUtilities() throws IOException {
+		final String profile1 = "src/test/resources/laptopBuyer.json";
+
+		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
+				StandardCharsets.UTF_8);
+		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+
+		FrequencyOpponentModel opp1 = new FrequencyOpponentModel().with(linearAdd1.getDomain(), null);
+
+		System.out.println(opp1.getUtility(bid1));
+		System.out.println(opp1.getUtility(bid2));
+		System.out.println(opp1.getUtility(bid3));
+
 	}
 
 	@Test
