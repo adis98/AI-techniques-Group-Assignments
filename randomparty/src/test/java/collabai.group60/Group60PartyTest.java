@@ -79,18 +79,15 @@ public class Group60PartyTest {
 	private LinearAdditive profile;
 	private final Parameters parameters = new Parameters();
 
-	private final static String ISS1 = "issue1";
-	private final static String ISS2 = "issue2";
-	private static final DiscreteValue I1V1 = new DiscreteValue("i1v1");
-	private static final DiscreteValue I1V2 = new DiscreteValue("i1v2");
-	private static final DiscreteValue I2V1 = new DiscreteValue("i2v1");
-	private static final DiscreteValue I2V2 = new DiscreteValue("i2v2");
-	private static final DiscreteValue I1V2b = new DiscreteValue("i1v2b");
+	private final static String ISS1 = "Brand";
+	private final static String ISS2 = "Harddisk";
+	private static final DiscreteValue I1V1 = new DiscreteValue("Dell");
+	private static final DiscreteValue I1V2 = new DiscreteValue("Macintosh");
+	private static final DiscreteValue I2V1 = new DiscreteValue("128 GB");
+	private static final DiscreteValue I2V2 = new DiscreteValue("512 GB");
 
 	private static Bid bid1;
 	private static Bid bid2;
-	private static Bid bid3;
-
 
 	@Before
 	public void before() throws JsonParseException, JsonMappingException,
@@ -112,16 +109,12 @@ public class Group60PartyTest {
 
 		Map<String, Value> issuevalues = new HashMap<>();
 		issuevalues.put(ISS1, I1V1);
-		issuevalues.put(ISS2, new NumberValue(new BigDecimal("1.2")));
+		issuevalues.put(ISS2, I2V1);
 		bid1 = new Bid(issuevalues);
 
-		issuevalues.put(ISS1, I1V1);
-		issuevalues.put(ISS2, new NumberValue(new BigDecimal("1.5")));
-		bid2 = new Bid(issuevalues);
-
 		issuevalues.put(ISS1, I1V2);
-		issuevalues.put(ISS2, new NumberValue(new BigDecimal("1.5")));
-		bid3 = new Bid(issuevalues);
+		issuevalues.put(ISS2, I2V2);
+		bid2 = new Bid(issuevalues);
 
 	}
 
@@ -157,11 +150,21 @@ public class Group60PartyTest {
 				StandardCharsets.UTF_8);
 		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
 
-		FrequencyOpponentModel opp1 = new FrequencyOpponentModel().with(linearAdd1.getDomain(), null);
+		PartyId partyId = new PartyId("Opponent");
+		Offer offer = new Offer(partyId, bid1);
+		Offer offer1 = new Offer(partyId, bid1);
+		Offer offer2 = new Offer(partyId, bid2);
+
+
+		FrequencyOpponentModel opp1 = new FrequencyOpponentModel()
+				.with(linearAdd1.getDomain(),null) //Always initialize with the domain and reservation bid
+				.with(offer,progress) //Whenever we get an offer we apply this to the corresponent opponent.
+				.with(offer1,progress)
+				.with(offer2,progress); //In this case, the opponent has made the same bid twice and another bid 1 more time
 
 		System.out.println(opp1.getUtility(bid1));
-		System.out.println(opp1.getUtility(bid2));
-		System.out.println(opp1.getUtility(bid3));
+		System.out.println(opp1.getUtility(bid2)); //This value is half of the first one because we only used it once
+													//They don't add up to one because in both cases we only use 2 issues.
 
 	}
 
