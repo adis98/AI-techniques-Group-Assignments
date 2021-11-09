@@ -102,6 +102,22 @@ public class Group60PartyTest {
 	}
 
 	@Test
+	public void callGetParetoFrontier() throws Exception {
+		final String profile1 = "src/test/resources/laptopBuyer.json";
+		final String profile2 = "src/test/resources/laptopSeller.json";
+
+		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
+				StandardCharsets.UTF_8);
+		String serialized2 = new String(Files.readAllBytes(Paths.get(profile2)),
+				StandardCharsets.UTF_8);
+		LinearAdditive linearAdd1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+		LinearAdditive linearAdd2 = (LinearAdditive) jackson.readValue(serialized2, Profile.class);
+		List<LinearAdditive> listOfProfiles = Arrays.asList(linearAdd1, linearAdd2);
+
+		Group60Party gp = new Group60Party();
+		System.out.println(gp.getParetoFrontier(listOfProfiles));
+	}
+	@Test
 	public void getDescriptionTest() {
 		assertNotNull(party.getDescription());
 	}

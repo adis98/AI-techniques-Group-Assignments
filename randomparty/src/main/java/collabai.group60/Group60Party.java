@@ -21,6 +21,7 @@ import geniusweb.actions.VoteWithValue;
 import geniusweb.actions.Votes;
 import geniusweb.actions.VotesWithValue;
 import geniusweb.bidspace.AllPartialBidsList;
+import geniusweb.bidspace.pareto.ParetoLinearAdditive;
 import geniusweb.inform.ActionDone;
 import geniusweb.inform.Finished;
 import geniusweb.inform.Inform;
@@ -34,6 +35,7 @@ import geniusweb.party.Capabilities;
 import geniusweb.party.DefaultParty;
 import geniusweb.profile.PartialOrdering;
 import geniusweb.profile.Profile;
+import geniusweb.profile.utilityspace.LinearAdditive;
 import geniusweb.profile.utilityspace.UtilitySpace;
 import geniusweb.profileconnection.ProfileConnectionFactory;
 import geniusweb.profileconnection.ProfileInterface;
@@ -147,6 +149,11 @@ public class Group60Party extends DefaultParty {
 			this.profileint.close();
 			this.profileint = null;
 		}
+	}
+
+	public Set<Bid> getParetoFrontier(List<LinearAdditive> listOfProfiles) {
+		ParetoLinearAdditive pareto = new ParetoLinearAdditive(listOfProfiles);
+		return pareto.getPoints();
 	}
 
 	/******************* private support funcs ************************/
