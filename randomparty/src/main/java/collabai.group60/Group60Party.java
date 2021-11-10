@@ -205,7 +205,6 @@ public class Group60Party extends DefaultParty {
 		AllPartialBidsList bidspace = new AllPartialBidsList(
 				profileint.getProfile().getDomain());
 		Bid bid = null;
-		//TODO: Retrieve bid from bidToPlace and offer this
 		for (int attempt = 0; attempt < 20 && !isGood(bid); attempt++) {
 			long i = random.nextInt(bidspace.size().intValue());
 			bid = bidspace.get(BigInteger.valueOf(i));
@@ -266,7 +265,6 @@ public class Group60Party extends DefaultParty {
 			AllPartialBidsList bidspace = new AllPartialBidsList(
 					profileint.getProfile().getDomain());
 			Bid bid = null;
-			//TODO: Retrieve bid from bidToPlace and offer this
 			for (int attempt = 0; attempt < 20 && !isGood(bid); attempt++) {
 				long i = random.nextInt(bidspace.size().intValue());
 				bid = bidspace.get(BigInteger.valueOf(i));
@@ -325,10 +323,10 @@ public class Group60Party extends DefaultParty {
 				PartyId partyId = voting.getOffers().get(i).getActor();
 				opponentModelMap.put(partyId,temp);
 			}
+			firstBid = false;
 		}
 		else{
 			for(int i = 0;i < voting.getOffers().size();i++) {
-				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
 				PartyId partyId = voting.getOffers().get(i).getActor();
 				FrequencyOpponentModel OM = opponentModelMap.get(partyId);
 				OM = OM.with(voting.getOffers().get(i), progress);
