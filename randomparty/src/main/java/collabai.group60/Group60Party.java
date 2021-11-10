@@ -17,7 +17,7 @@ import geniusweb.actions.Votes;
 import geniusweb.actions.VotesWithValue;
 import geniusweb.bidspace.AllPartialBidsList;
 import geniusweb.bidspace.pareto.GenericPareto;
-import geniusweb.bidspace.pareto.ParetoLinearAdditive;
+//import geniusweb.bidspace.pareto.ParetoLinearAdditive;
 import geniusweb.inform.ActionDone;
 import geniusweb.inform.Finished;
 import geniusweb.inform.Inform;
@@ -27,11 +27,12 @@ import geniusweb.inform.Settings;
 import geniusweb.inform.Voting;
 import geniusweb.inform.YourTurn;
 import geniusweb.issuevalue.Bid;
+import geniusweb.opponentmodel.FrequencyOpponentModel;
 import geniusweb.party.Capabilities;
 import geniusweb.party.DefaultParty;
 import geniusweb.profile.PartialOrdering;
 import geniusweb.profile.Profile;
-import geniusweb.profile.utilityspace.LinearAdditive;
+//import geniusweb.profile.utilityspace.LinearAdditive;
 import geniusweb.profile.utilityspace.UtilitySpace;
 import geniusweb.profileconnection.ProfileConnectionFactory;
 import geniusweb.profileconnection.ProfileInterface;
@@ -70,6 +71,10 @@ public class Group60Party extends DefaultParty {
 	private Votes lastvotes;
 	private VotesWithValue lastvoteswithvalue;
 	private String protocol;
+	private Integer Pmax = Integer.MAX_VALUE;
+	private Map<PartyId, Integer> oppPowers;
+	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
+	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
 
 	public Group60Party() {
 	}
@@ -164,6 +169,39 @@ public class Group60Party extends DefaultParty {
 		}
 		return goodBids;
 	}
+	public Bid bidToPlace(Set<Bid> paretoFront, UtilitySpace profile) throws IOException {
+		Iterator<Bid> itr = paretoFront.iterator();
+		Bid goodBid = null;
+		Double utility = 0.0;
+		if(itr.hasNext()){
+			goodBid = itr.next();
+			utility = profile.getUtility(goodBid).doubleValue();
+			while(itr.hasNext()){
+				Bid tempBid = itr.next();
+				Double tempUtil = profile.getUtility(tempBid).doubleValue();
+				if(tempUtil > utility){
+					goodBid = tempBid;
+					utility = tempUtil;
+				}
+			}
+		}
+		else{ //Pareto front not available because first time
+			goodBid = placeRandomBid();
+		}
+		return goodBid;
+	}
+
+	private Bid placeRandomBid() throws IOException {
+		AllPartialBidsList bidspace = new AllPartialBidsList(
+				profileint.getProfile().getDomain());
+		Bid bid = null;
+		//TODO: Retrieve bid from bidToPlace and offer this
+		for (int attempt = 0; attempt < 20 && !isGood(bid); attempt++) {
+			long i = random.nextInt(bidspace.size().intValue());
+			bid = bidspace.get(BigInteger.valueOf(i));
+		}
+		return bid;
+	}
 
 	//to Check if utility bid is greater than reservation value
 	public boolean selectBid(Bid bid, UtilitySpace profile){
@@ -210,7 +248,7 @@ public class Group60Party extends DefaultParty {
 	 */
 	private void makeOffer() throws IOException {
 		Action action;
-		if ((protocol.equals("SAOP") || protocol.equals("SHAOP"))
+		/*if ((protocol.equals("SAOP") || protocol.equals("SHAOP"))
 				&& isGood(lastReceivedBid)) {
 			action = new Accept(me, lastReceivedBid);
 		} else {
@@ -218,12 +256,21 @@ public class Group60Party extends DefaultParty {
 			AllPartialBidsList bidspace = new AllPartialBidsList(
 					profileint.getProfile().getDomain());
 			Bid bid = null;
+			//TODO: Retrieve bid from bidToPlace and offer this
 			for (int attempt = 0; attempt < 20 && !isGood(bid); attempt++) {
 				long i = random.nextInt(bidspace.size().intValue());
 				bid = bidspace.get(BigInteger.valueOf(i));
-			}
-			action = new Offer(me, bid);
+			}*/
+
+		//}
+		Bid bid = null;
+		if(firstBid){
+			bid = bidToPlace(null,null);
 		}
+		else{
+			bid = bidToPlace(getParetoFrontier(null), (UtilitySpace) profileint.getProfile()); //TODO: accept opponent profiles as input
+		}
+		action = new Offer(me, bid);
 		getConnection().send(action);
 
 	}
@@ -256,17 +303,67 @@ public class Group60Party extends DefaultParty {
 	 * @return our next Votes.
 	 */
 	private Votes vote(Voting voting) throws IOException {
+		if(firstBid){
+			this.oppPowers = voting.getPowers();
+			Integer sum = 0;
+			for(PartyId id : oppPowers.keySet()){
+				sum = sum + oppPowers.get(id);
+			}
+			this.Pmax = sum;
+			for(int i = 0;i < voting.getOffers().size();i++){
+				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
+				PartyId partyId = voting.getOffers().get(i).getActor();
+				opponentModelMap.put(partyId,temp);
+			}
+		}
+		else{
+			for(int i = 0;i < voting.getOffers().size();i++) {
+				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
+				PartyId partyId = voting.getOffers().get(i).getActor();
+				FrequencyOpponentModel OM = opponentModelMap.get(partyId);
+				OM = OM.with(voting.getOffers().get(i), progress);
+				opponentModelMap.replace(partyId, OM);
+			}
+		}
+		List<UtilitySpace> listOfProfiles = Arrays.asList();
+		for(PartyId key : opponentModelMap.keySet()){
+			if(!key.equals(profileint)){
+				listOfProfiles.add(opponentModelMap.get(key));
+			}
+		}
+		listOfProfiles.add((UtilitySpace) profileint.getProfile());
+		Group60Party gp = new Group60Party();
+		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
 		Object val = settings.getParameters().get("minPower");
-		Integer minpower = (val instanceof Integer) ? (Integer) val : 2;
+		Integer minpower = (val instanceof Integer) ? (Integer) val : (Integer)(Pmax/2);
 		val = settings.getParameters().get("maxPower");
 		Integer maxpower = (val instanceof Integer) ? (Integer) val
-				: Integer.MAX_VALUE;
+				: Pmax;
 
 		Set<Vote> votes = voting.getOffers().stream().distinct()
-				.filter(offer -> isGood(offer.getBid()))
+				.filter(offer -> acceptOffer(offer.getBid(),paretoFrontier))
 				.map(offer -> new Vote(me, offer.getBid(), minpower, maxpower))
 				.collect(Collectors.toSet());
 		return new Votes(me, votes);
+	}
+
+	public boolean acceptOffer(Bid bid, Set<Bid> paretoFront){
+		Profile profile;
+		try {
+			profile = profileint.getProfile();
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+		double util = 0;
+		if (profile instanceof UtilitySpace)
+			util = ((UtilitySpace) profile).getUtility(bid).doubleValue();
+		if(paretoFront.contains(bid) && (util > 0.7)){
+			return true;
+		}
+		else{
+			return false;
+		}
+
 	}
 
 	/**
