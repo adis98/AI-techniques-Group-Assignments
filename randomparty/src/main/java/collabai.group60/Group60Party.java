@@ -1,6 +1,7 @@
 package collabai.group60;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Level;
@@ -44,7 +45,7 @@ import tudelft.utilities.logging.Reporter;
  * A party that places random bids and accepts when it receives an offer with
  * sufficient utility. This party is also a demo on how to support the various
  * protocols, which causes this party to look a bit complex.
- * 
+ *
  * <h2>parameters</h2>
  * <table >
  * <caption>parameters</caption>
@@ -76,6 +77,7 @@ public class Group60Party extends DefaultParty {
 	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
 	private Set<Bid> mostRecentParetoFrontier = null;
 	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
+	private double reservationValue;
 
 	public Group60Party() {
 	}
@@ -93,11 +95,18 @@ public class Group60Party extends DefaultParty {
 				this.progress = sett.getProgress();
 				this.settings = sett;
 				this.protocol = sett.getProtocol().getURI().getPath();
+				Object val = sett.getParameters().get("reservationValue");
+				this.reservationValue = (val instanceof Double) ? (Double) val : 0.7;
 				if ("Learn".equals(protocol)) {
 					getConnection().send(new LearningDone(me));
 				} else {
 					this.profileint = ProfileConnectionFactory
 							.create(sett.getProfile().getURI(), getReporter());
+				}
+				try {
+					this.reservationValue = ((UtilitySpace) this.profileint.getProfile()).getUtility(this.profileint.getProfile().getReservationBid()).doubleValue();
+				} catch (Exception e) {
+					getReporter().log(Level.WARNING, "No reservation bid found");
 				}
 			} else if (info instanceof ActionDone) {
 				Action otheract = ((ActionDone) info).getAction();
@@ -111,13 +120,13 @@ public class Group60Party extends DefaultParty {
 				terminate(); // stop this party and free resources.
 			} else if (info instanceof Voting) {
 				switch (protocol) {
-				case "MOPAC":
-					lastvotes = vote((Voting) info);
-					getConnection().send(lastvotes);
-					break;
-				case "MOPAC2":
-					lastvoteswithvalue = voteWithValue((Voting) info);
-					getConnection().send(lastvoteswithvalue);
+					case "MOPAC":
+						lastvotes = vote((Voting) info);
+						getConnection().send(lastvotes);
+						break;
+					case "MOPAC2":
+						lastvoteswithvalue = voteWithValue((Voting) info);
+						getConnection().send(lastvoteswithvalue);
 				}
 			} else if (info instanceof OptIn) {
 				// just repeat our last vote.
@@ -206,7 +215,7 @@ public class Group60Party extends DefaultParty {
 
 	//to Check if utility bid is greater than reservation value
 	public boolean selectBid(Bid bid, UtilitySpace profile){
-		return profile.getUtility(bid).doubleValue() > 0.7;
+		return profile.getUtility(bid).doubleValue() > this.reservationValue;
 	}
 
 	/******************* private support funcs ************************/
@@ -290,7 +299,7 @@ public class Group60Party extends DefaultParty {
 			throw new IllegalStateException(e);
 		}
 		if (profile instanceof UtilitySpace)
-			return ((UtilitySpace) profile).getUtility(bid).doubleValue() > 0.7;
+			return ((UtilitySpace) profile).getUtility(bid).doubleValue() > this.reservationValue;
 		if (profile instanceof PartialOrdering) {
 			return ((PartialOrdering) profile).isPreferredOrEqual(bid,
 					profile.getReservationBid());
@@ -300,7 +309,7 @@ public class Group60Party extends DefaultParty {
 
 	/**
 	 * @param voting the {@link Voting} object containing the options
-	 * 
+	 *
 	 * @return our next Votes.
 	 */
 	private Votes vote(Voting voting) throws IOException {
@@ -359,7 +368,7 @@ public class Group60Party extends DefaultParty {
 		double util = 0;
 		if (profile instanceof UtilitySpace)
 			util = ((UtilitySpace) profile).getUtility(bid).doubleValue();
-		if(paretoFront.contains(bid) && (util > 0.7)){
+		if(paretoFront.contains(bid) && (util > this.reservationValue)){
 			return true;
 		}
 		else{
@@ -370,7 +379,7 @@ public class Group60Party extends DefaultParty {
 
 	/**
 	 * @param voting the {@link Voting} object containing the options
-	 * 
+	 *
 	 * @return our next Votes. Returns only votes on good bids and tries to
 	 *         distribute vote values evenly over all good bids.
 	 */
