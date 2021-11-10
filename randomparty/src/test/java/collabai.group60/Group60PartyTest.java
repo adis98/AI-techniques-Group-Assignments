@@ -67,7 +67,7 @@ public class Group60PartyTest {
 	private static final PartyId PARTY1 = new PartyId("party1");
 	private static final String SAOP = "SAOP";
 	private static final PartyId otherparty = new PartyId("other");
-	private static final String PROFILE = "src/test/resources/testprofile.json";
+	private static final String PROFILE = "src/test/resources/party3.json";
 	private final static ObjectMapper jackson = new ObjectMapper();
 
 	private Group60Party party;
@@ -125,8 +125,8 @@ public class Group60PartyTest {
 
 	@Test
 	public void callGetParetoFrontier() throws Exception {
-		final String profile1 = "src/test/resources/laptopBuyer.json";
-		final String profile2 = "src/test/resources/laptopSeller.json";
+		final String profile1 = "src/test/resources/party1.json";
+		final String profile2 = "src/test/resources/party2.json";
 
 		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
 				StandardCharsets.UTF_8);
@@ -145,7 +145,7 @@ public class Group60PartyTest {
 
 	@Test
 	public void getParetoFrontierWithFrequencyOpponentModel() throws Exception {
-		final String profile1 = "src/test/resources/laptopBuyer.json";
+		final String profile1 = "src/test/resources/party1.json";
 
 		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
 				StandardCharsets.UTF_8);
@@ -178,7 +178,7 @@ public class Group60PartyTest {
 
 	@Test
 	public void getFrequencyOpponentModelsUtilities() throws IOException {
-		final String profile1 = "src/test/resources/laptopBuyer.json";
+		final String profile1 = "src/test/resources/party1.json";
 
 		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
 				StandardCharsets.UTF_8);
