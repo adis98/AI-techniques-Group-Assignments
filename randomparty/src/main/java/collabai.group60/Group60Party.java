@@ -74,6 +74,7 @@ public class Group60Party extends DefaultParty {
 	private Integer Pmax = Integer.MAX_VALUE;
 	private Map<PartyId, Integer> oppPowers;
 	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
+	private Set<Bid> mostRecentParetoFrontier = null;
 	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
 
 	public Group60Party() {
@@ -268,7 +269,7 @@ public class Group60Party extends DefaultParty {
 			bid = bidToPlace(null,null);
 		}
 		else{
-			bid = bidToPlace(getParetoFrontier(null), (UtilitySpace) profileint.getProfile()); //TODO: accept opponent profiles as input
+			bid = bidToPlace(mostRecentParetoFrontier, (UtilitySpace) profileint.getProfile());
 		}
 		action = new Offer(me, bid);
 		getConnection().send(action);
@@ -334,6 +335,7 @@ public class Group60Party extends DefaultParty {
 		listOfProfiles.add((UtilitySpace) profileint.getProfile());
 		Group60Party gp = new Group60Party();
 		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		mostRecentParetoFrontier = paretoFrontier;
 		Object val = settings.getParameters().get("minPower");
 		Integer minpower = (val instanceof Integer) ? (Integer) val : (Integer)(Pmax/2);
 		val = settings.getParameters().get("maxPower");
