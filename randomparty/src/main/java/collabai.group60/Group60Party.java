@@ -323,6 +323,7 @@ public class Group60Party extends DefaultParty {
 				PartyId partyId = voting.getOffers().get(i).getActor();
 				opponentModelMap.put(partyId, temp);
 			}
+			firstBid = false;
 		} else {
 			for (int i = 0; i < voting.getOffers().size(); i++) {
 				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
