@@ -64,8 +64,34 @@ public class GenericParetoModified implements ParetoFrontier {
     }
 
     public synchronized Set<Bid> getOptimalBids() {
-        if (paretobids == null)
-            computePareto();
+        if (paretobids == null) {
+            paretobids = new HashSet<Bid>();
+            AllBidsList bids = new AllBidsList(profiles.get(0).getDomain());
+            HashMap<Double,List<Bid>> sums = new HashMap<Double,List<Bid>>((int) bids.size().doubleValue());
+            double maxSum = 0;
+            long startTime = System.currentTimeMillis();
+            for (Bid newbid : bids) {
+                final double[] sumvalue = {0};
+                profiles.forEach(
+                        profile -> {
+                            sumvalue[0] = sumvalue[0] + ((UtilitySpace) profile).getUtility(newbid).doubleValue();
+                        });
+                if(sumvalue[0] >= maxSum) {
+                    List<Bid> existingList = sums.get(sumvalue[0]);
+                    if(existingList == null) {
+                        existingList = new ArrayList<>();
+                    }
+                    existingList.add(newbid);
+                    sums.put(sumvalue[0], existingList);
+                }
+                maxSum = Math.max(maxSum, sumvalue[0]);
+                long estimatedTime = System.currentTimeMillis() - startTime;
+                if(estimatedTime > 2000) {
+                    break;
+                }
+            }
+            paretobids.addAll(sums.get(maxSum));
+        }
         List<Bid> paretoBidsAsList = new ArrayList<>(paretobids);
         List<List<Double>> doubleStream = paretoBidsAsList.stream()
                 .map(this::issueSum)
@@ -162,7 +188,6 @@ public class GenericParetoModified implements ParetoFrontier {
     private List<Double> issueSum(Bid bid) {
         return profiles.stream().map(
                 profile -> {
-                    UtilitySpace profileForced = (UtilitySpace) profile;
                     return ((UtilitySpace) profile).getUtility(bid).doubleValue();
                 }).collect(Collectors.toList());
     }
