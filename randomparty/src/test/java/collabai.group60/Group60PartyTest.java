@@ -25,6 +25,7 @@ import geniusweb.issuevalue.NumberValue;
 import geniusweb.issuevalue.Value;
 import geniusweb.opponentmodel.FrequencyOpponentModel;
 import geniusweb.profile.utilityspace.UtilitySpace;
+import geniusweb.profileconnection.ProfileInterface;
 import geniusweb.progress.Progress;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +69,8 @@ public class Group60PartyTest {
 	private static final String SAOP = "SAOP";
 	private static final PartyId otherparty = new PartyId("other");
 	private static final String PROFILE = "src/test/resources/party3.json";
+	private static final String PROFILE1 = "src/test/resources/testprofile.json";
+	private static final String PROFILE2 = "src/test/resources/testprofile2.json";
 	private final static ObjectMapper jackson = new ObjectMapper();
 
 	private Group60Party party;
@@ -78,6 +81,8 @@ public class Group60PartyTest {
 	private final ProgressRounds progress = mock(ProgressRounds.class);
 	private Settings settings, mopacSettings, mopac2Settings;
 	private LinearAdditive profile;
+	private LinearAdditive profile1;
+	private LinearAdditive profile2;
 	private final Parameters parameters = new Parameters();
 
 	private final static String ISS1 = "Brand";
@@ -108,6 +113,14 @@ public class Group60PartyTest {
 				StandardCharsets.UTF_8);
 		profile = (LinearAdditive) jackson.readValue(serialized, Profile.class);
 
+		String serialized1 = new String(Files.readAllBytes(Paths.get(PROFILE1)),
+				StandardCharsets.UTF_8);
+		profile1 = (LinearAdditive) jackson.readValue(serialized1, Profile.class);
+
+		String serialized2 = new String(Files.readAllBytes(Paths.get(PROFILE2)),
+				StandardCharsets.UTF_8);
+		profile2 = (LinearAdditive) jackson.readValue(serialized2, Profile.class);
+
 		Map<String, Value> issuevalues = new HashMap<>();
 		issuevalues.put(ISS1, I1V1);
 		issuevalues.put(ISS2, I2V1);
@@ -137,10 +150,41 @@ public class Group60PartyTest {
 		List<UtilitySpace> listOfProfiles = Arrays.asList(linearAdd1, linearAdd2);
 
 		Group60Party gp = new Group60Party();
-		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		Set<Bid> paretoFrontier = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
 		System.out.println(paretoFrontier);
 
 		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
+	}
+
+	@Test
+	public void acceptNumericBidsWithThreshold() throws Exception {
+
+		List<UtilitySpace> listOfProfiles = Arrays.asList(profile1, profile2);
+
+		Group60Party gp = new Group60Party();
+		ProfileInterface profileInterfaceMock = mock(ProfileInterface.class);
+		when(profileInterfaceMock.getProfile()).thenReturn(profile);
+		gp.profileint = profileInterfaceMock;
+		gp.reservationValue = 0;
+		Map<String, Value> issuevalues = new HashMap<>();
+		issuevalues.put("issue2", new NumberValue(new BigDecimal(32)));
+		issuevalues.put("issue1", new DiscreteValue("issue1value1"));
+		Bid testBid1 = new Bid(issuevalues);
+
+		issuevalues.put("issue2", new NumberValue(new BigDecimal(11)));
+		issuevalues.put("issue1", new DiscreteValue("issue1value2"));
+		Bid testBid2 = new Bid(issuevalues);
+
+		issuevalues.put("issue2", new NumberValue(new BigDecimal(16)));
+		issuevalues.put("issue1", new DiscreteValue("issue1value1"));
+		Bid testBid3 = new Bid(issuevalues);
+
+		Set<Bid> paretoFrontier = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
+		System.out.println(paretoFrontier);
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid1, 0.8));
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid2, 0.8));
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid3, 0.8));
+
 	}
 
 	@Test
@@ -171,7 +215,7 @@ public class Group60PartyTest {
 
 		Group60Party gp = new Group60Party();
 		List<UtilitySpace> listOfProfiles = Arrays.asList(opp1, opp2);
-		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
+		Set<Bid> paretoFrontier = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
 		System.out.println(paretoFrontier);
 		System.out.println(gp.determineBidFromParetoFrontier(paretoFrontier, linearAdd1));
 	}
@@ -198,7 +242,7 @@ public class Group60PartyTest {
 
 		System.out.println(opp1.getUtility(bid1));
 		System.out.println(opp1.getUtility(bid2)); //This value is half of the first one because we only used it once
-													//They don't add up to one because in both cases we only use 2 issues.
+		//They don't add up to one because in both cases we only use 2 issues.
 
 	}
 

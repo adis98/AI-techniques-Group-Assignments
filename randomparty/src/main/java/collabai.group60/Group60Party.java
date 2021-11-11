@@ -1,13 +1,11 @@
 package collabai.group60;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import geniusweb.actions.Accept;
 import geniusweb.actions.Action;
 import geniusweb.actions.LearningDone;
 import geniusweb.actions.Offer;
@@ -17,7 +15,6 @@ import geniusweb.actions.VoteWithValue;
 import geniusweb.actions.Votes;
 import geniusweb.actions.VotesWithValue;
 import geniusweb.bidspace.AllPartialBidsList;
-import geniusweb.bidspace.pareto.GenericPareto;
 //import geniusweb.bidspace.pareto.ParetoLinearAdditive;
 import geniusweb.inform.ActionDone;
 import geniusweb.inform.Finished;
@@ -28,6 +25,9 @@ import geniusweb.inform.Settings;
 import geniusweb.inform.Voting;
 import geniusweb.inform.YourTurn;
 import geniusweb.issuevalue.Bid;
+import geniusweb.issuevalue.DiscreteValue;
+import geniusweb.issuevalue.NumberValue;
+import geniusweb.issuevalue.Value;
 import geniusweb.opponentmodel.FrequencyOpponentModel;
 import geniusweb.party.Capabilities;
 import geniusweb.party.DefaultParty;
@@ -75,9 +75,9 @@ public class Group60Party extends DefaultParty {
 	private Integer Pmax = Integer.MAX_VALUE;
 	private Map<PartyId, Integer> oppPowers;
 	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
-	private Set<Bid> mostRecentParetoFrontier = null;
+	private Set<Bid> mostRecentOptimalPoints = null;
 	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
-	private double reservationValue;
+	protected double reservationValue;
 
 	public Group60Party() {
 	}
@@ -163,9 +163,9 @@ public class Group60Party extends DefaultParty {
 	}
 
 	//to get the set of bids on ParetoFrontier
-	public Set<Bid> getParetoFrontier(List<UtilitySpace> listOfProfiles) {
-		GenericPareto pareto = new GenericPareto(listOfProfiles);
-		return pareto.getPoints();
+	public Set<Bid> getOptimalPointsInParetoFrontier(List<UtilitySpace> listOfProfiles) {
+		GenericParetoModified pareto = new GenericParetoModified(listOfProfiles);
+		return pareto.getOptimalBids();
 	}
 
 	//to choose from our bidSpace according to the points on ParetoFrontier
@@ -229,21 +229,21 @@ public class Group60Party extends DefaultParty {
 		if (protocol == null)
 			return;
 		switch (protocol) {
-		case "SAOP":
-		case "SHAOP":
-			if (!(info instanceof YourTurn))
+			case "SAOP":
+			case "SHAOP":
+				if (!(info instanceof YourTurn))
+					return;
+				break;
+			case "MOPAC":
+				if (!(info instanceof OptIn))
+					return;
+				break;
+			case "MOPAC2":
+				if (!(info instanceof OptInWithValue))
+					return;
+				break;
+			default:
 				return;
-			break;
-		case "MOPAC":
-			if (!(info instanceof OptIn))
-				return;
-			break;
-		case "MOPAC2":
-			if (!(info instanceof OptInWithValue))
-				return;
-			break;
-		default:
-			return;
 		}
 		// if we get here, round must be increased.
 		if (progress instanceof ProgressRounds) {
@@ -272,11 +272,10 @@ public class Group60Party extends DefaultParty {
 
 		//}
 		Bid bid = null;
-		if(firstBid){
-			bid = bidToPlace(null,null);
-		}
-		else{
-			bid = bidToPlace(mostRecentParetoFrontier, (UtilitySpace) profileint.getProfile());
+		if (firstBid) {
+			bid = bidToPlace(null, null);
+		} else {
+			bid = bidToPlace(mostRecentOptimalPoints, (UtilitySpace) profileint.getProfile());
 		}
 		action = new Offer(me, bid);
 		getConnection().send(action);
@@ -307,26 +306,24 @@ public class Group60Party extends DefaultParty {
 
 	/**
 	 * @param voting the {@link Voting} object containing the options
-	 *
 	 * @return our next Votes.
 	 */
 	private Votes vote(Voting voting) throws IOException {
 		if(firstBid){
 			this.oppPowers = voting.getPowers();
 			Integer sum = 0;
-			for(PartyId id : oppPowers.keySet()){
+			for (PartyId id : oppPowers.keySet()) {
 				sum = sum + oppPowers.get(id);
 			}
 			this.Pmax = sum;
-			for(int i = 0;i < voting.getOffers().size();i++){
+			for (int i = 0; i < voting.getOffers().size(); i++) {
 				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
 				PartyId partyId = voting.getOffers().get(i).getActor();
-				opponentModelMap.put(partyId,temp);
+				opponentModelMap.put(partyId, temp);
 			}
-			firstBid = false;
-		}
-		else{
-			for(int i = 0;i < voting.getOffers().size();i++) {
+		} else {
+			for (int i = 0; i < voting.getOffers().size(); i++) {
+				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
 				PartyId partyId = voting.getOffers().get(i).getActor();
 				FrequencyOpponentModel OM = opponentModelMap.get(partyId);
 				OM = OM.with(voting.getOffers().get(i), progress);
@@ -334,29 +331,29 @@ public class Group60Party extends DefaultParty {
 			}
 		}
 		List<UtilitySpace> listOfProfiles = Arrays.asList();
-		for(PartyId key : opponentModelMap.keySet()){
-			if(!key.equals(profileint)){
+		for (PartyId key : opponentModelMap.keySet()) {
+			if (!key.equals(profileint)) {
 				listOfProfiles.add(opponentModelMap.get(key));
 			}
 		}
 		listOfProfiles.add((UtilitySpace) profileint.getProfile());
 		Group60Party gp = new Group60Party();
-		Set<Bid> paretoFrontier = gp.getParetoFrontier(listOfProfiles);
-		mostRecentParetoFrontier = paretoFrontier;
+		Set<Bid> optimalPoints = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
+		mostRecentOptimalPoints = optimalPoints;
 		Object val = settings.getParameters().get("minPower");
-		Integer minpower = (val instanceof Integer) ? (Integer) val : (Integer)(Pmax/2);
+		Integer minpower = (val instanceof Integer) ? (Integer) val : (Integer) (Pmax / 2);
 		val = settings.getParameters().get("maxPower");
 		Integer maxpower = (val instanceof Integer) ? (Integer) val
 				: Pmax;
 
 		Set<Vote> votes = voting.getOffers().stream().distinct()
-				.filter(offer -> acceptOffer(offer.getBid(),paretoFrontier))
+				.filter(offer -> acceptOffer(offer.getBid(), optimalPoints))
 				.map(offer -> new Vote(me, offer.getBid(), minpower, maxpower))
 				.collect(Collectors.toSet());
 		return new Votes(me, votes);
 	}
 
-	public boolean acceptOffer(Bid bid, Set<Bid> paretoFront){
+	public boolean acceptOffer(Bid bid, Set<Bid> optimalPoints) {
 		Profile profile;
 		try {
 			profile = profileint.getProfile();
@@ -366,20 +363,41 @@ public class Group60Party extends DefaultParty {
 		double util = 0;
 		if (profile instanceof UtilitySpace)
 			util = ((UtilitySpace) profile).getUtility(bid).doubleValue();
-		if(paretoFront.contains(bid) && (util > this.reservationValue)){
+		if (bidWithThresholdOfOptimality(optimalPoints, bid, 0.8) && (util > this.reservationValue)) {
 			return true;
-		}
-		else{
+		} else {
 			return false;
 		}
 
 	}
 
+	public Boolean bidWithThresholdOfOptimality(Set<Bid> optimalPoints, Bid bid, Double threshold) {
+		return optimalPoints.stream().anyMatch(optimalBid -> {
+			Map<String, Value> issueValues = bid.getIssueValues();
+			return issueValues.keySet().stream().allMatch(issue -> {
+				Value optimalIssueValue = issueValues.get(issue);
+				Value bidIssueValue = optimalBid.getIssueValues().get(issue);
+				if (optimalIssueValue == null || bidIssueValue == null) {
+					return false;
+				}
+				if (optimalIssueValue instanceof NumberValue && bidIssueValue instanceof NumberValue) {
+					double denom = Math.max(((NumberValue) optimalIssueValue).getValue().doubleValue(), ((NumberValue) bidIssueValue).getValue().doubleValue());
+					double numer = Math.min(((NumberValue) optimalIssueValue).getValue().doubleValue(), ((NumberValue) bidIssueValue).getValue().doubleValue());
+					if (numer / denom >= threshold) {
+						return true;
+					}
+				} else if (optimalIssueValue instanceof DiscreteValue && bidIssueValue instanceof DiscreteValue) {
+					return ((DiscreteValue) optimalIssueValue).getValue().equals(((DiscreteValue) bidIssueValue).getValue());
+				}
+				return false;
+			});
+		});
+	}
+
 	/**
 	 * @param voting the {@link Voting} object containing the options
-	 *
 	 * @return our next Votes. Returns only votes on good bids and tries to
-	 *         distribute vote values evenly over all good bids.
+	 * distribute vote values evenly over all good bids.
 	 */
 	private VotesWithValue voteWithValue(Voting voting) throws IOException {
 		Object val = settings.getParameters().get("minPower");
