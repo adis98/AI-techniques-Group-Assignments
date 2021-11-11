@@ -1,0 +1,98 @@
+{
+	"LinearAdditiveUtilitySpace": {
+		"name": "7issues1",
+		"issueUtilities": {
+			"Climate Change": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.11,
+					"highValue": 9,
+					"highUtility": 0.99
+				}
+			},
+			"Monarchy": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.12,
+					"highValue": 9,
+					"highUtility": 0.97
+				}
+			},
+			"Covid Measures": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.13,
+					"highValue": 9,
+					"highUtility": 0.96
+				}
+			},
+			"Labour": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.14,
+					"highValue": 9,
+					"highUtility": 0.94
+				}
+			},
+			"European Union": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.15,
+					"highValue": 9,
+					"highUtility": 0.93
+				}
+			},
+			"Economy": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.16,
+					"highValue": 9,
+					"highUtility": 0.92
+				}
+			},
+			"Foreign Relations": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.16,
+					"highValue": 9,
+					"highUtility": 0.91
+				}
+			}
+		},
+		"issueWeights": {
+			"Climate Change": 0.07531677352656704,
+			"Monarchy": 0.18148468268008364,
+			"Covid Measures": 0.13035193969082373,
+			"Labour": 0.24649985443378972,
+			"European Union": 0.16931694966873587,
+			"Economy": 0.131353,
+			"Foreign Relations": 0.0656768
+		},
+		"domain": {
+			"name": "7issues",
+			"issuesValues": {
+				"Climate Change": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Monarchy": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Covid Measures": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Labour": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"European Union": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Economy": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Foreign Relations": {
+					"range": {"low":0,"high":9,"step":1} 
+				}
+			}
+		}
+	}
+}

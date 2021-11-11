@@ -1,0 +1,98 @@
+{
+	"LinearAdditiveUtilitySpace": {
+		"name": "7issues3",
+		"issueUtilities": {
+			"Climate Change": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.61,
+					"highValue": 9,
+					"highUtility": 0.21
+				}
+			},
+			"Monarchy": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.92,
+					"highValue": 9,
+					"highUtility": 0.21
+				}
+			},
+			"Covid Measures": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.83,
+					"highValue": 9,
+					"highUtility": 0.03
+				}
+			},
+			"Labour": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.84,
+					"highValue": 9,
+					"highUtility": 0.04
+				}
+			},
+			"European Union": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.85,
+					"highValue": 9,
+					"highUtility": 0.05
+				}
+			},
+			"Economy": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.86,
+					"highValue": 9,
+					"highUtility": 0.06
+				}
+			},
+			"Foreign Relations": {
+				"NumberValueSetUtilities": {
+					"lowValue": 0,
+					"lowUtility": 0.87,
+					"highValue": 9,
+					"highUtility": 0.07
+				}
+			}
+		},
+		"issueWeights": {
+			"Climate Change": 0.123456,
+			"Monarchy": 0.311742,
+			"Covid Measures": 0.0538871,
+			"Labour": 0.0269436,
+			"European Union": 0.161552,
+			"Economy": 0.161552,
+			"Foreign Relations": 0.1608673
+		},
+		"domain": {
+			"name": "7issues",
+			"issuesValues": {
+				"Climate Change": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Monarchy": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Covid Measures": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Labour": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"European Union": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Economy": {
+					"range": {"low":0,"high":9,"step":1} 
+				},
+				"Foreign Relations": {
+					"range": {"low":0,"high":9,"step":1} 
+				}
+			}
+		}
+	}
+}

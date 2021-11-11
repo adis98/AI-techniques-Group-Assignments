@@ -1,0 +1,26 @@
+{
+	"name": "7issues",
+	"issuesValues": {
+		"Climate Change": {
+			"range": {"low":0,"high":9,"step":1} 
+		},
+		"Monarchy": {
+			"range": {"low":0,"high":9,"step":1} 
+		},
+		"Covid Measures": {
+			"range": {"low":0,"high":9,"step":1} 
+		},
+		"Labour": {
+			"range": {"low":0,"high":9,"step":1} 
+		},
+		"European Union": {
+			"range": {"low":0,"high":9,"step":1} 
+		},
+		"Economy": {
+			"range": {"low":0,"high":9,"step":1} 
+		},
+		"Foreign Relations": {
+			"range": {"low":0,"high":9,"step":1} 
+		}
+	}
+}
