@@ -180,18 +180,20 @@ public class Group60Party extends DefaultParty {
 		return goodBids;
 	}
 	public Bid bidToPlace(Set<Bid> paretoFront, UtilitySpace profile) throws IOException {
-		Iterator<Bid> itr = paretoFront.iterator();
 		Bid goodBid = null;
-		Double utility = 0.0;
-		if(itr.hasNext()){
-			goodBid = itr.next();
-			utility = profile.getUtility(goodBid).doubleValue();
-			while(itr.hasNext()){
-				Bid tempBid = itr.next();
-				Double tempUtil = profile.getUtility(tempBid).doubleValue();
-				if(tempUtil > utility){
-					goodBid = tempBid;
-					utility = tempUtil;
+		if (paretoFront != null){
+			Iterator<Bid> itr = paretoFront.iterator();
+			Double utility = 0.0;
+			if (itr.hasNext()) {
+				goodBid = itr.next();
+				utility = profile.getUtility(goodBid).doubleValue();
+				while (itr.hasNext()) {
+					Bid tempBid = itr.next();
+					Double tempUtil = profile.getUtility(tempBid).doubleValue();
+					if (tempUtil > utility) {
+						goodBid = tempBid;
+						utility = tempUtil;
+					}
 				}
 			}
 		}
