@@ -170,9 +170,7 @@ public class GenericParetoModified implements ParetoFrontier {
     private Double optimalDifference(List<Double> profileIssueValue) {
         List<Double> pairwiseDifferences = new ArrayList<>();
         for (int i = 0; i < profileIssueValue.size() - 1; i++) {
-            for (int j = i + 1; j < profileIssueValue.size(); j++) {
-                pairwiseDifferences.add(Math.abs(profileIssueValue.get(i) - profileIssueValue.get(j)));
-            }
+            pairwiseDifferences.add(Math.abs(profileIssueValue.get(i) - profileIssueValue.get(i+1)));
         }
         return sum(pairwiseDifferences);
     }
