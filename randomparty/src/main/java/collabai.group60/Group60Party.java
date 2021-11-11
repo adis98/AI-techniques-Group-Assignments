@@ -74,7 +74,7 @@ public class Group60Party extends DefaultParty {
 	private String protocol;
 	private Integer Pmax = Integer.MAX_VALUE;
 	private Map<PartyId, Integer> oppPowers;
-	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
+	private Map<PartyId, FrequencyOpponentModel> opponentModelMap = new HashMap<>();
 	private Set<Bid> mostRecentOptimalPoints = null;
 	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
 	protected double reservationValue;
