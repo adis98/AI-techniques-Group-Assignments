@@ -122,7 +122,7 @@ public class GenericParetoModified implements ParetoFrontier {
                     paretobids.add(newbid);
                 }
                 long estimatedTime = System.currentTimeMillis() - startTime;
-                if(estimatedTime > 15000) {
+                if(estimatedTime > 2000) {
                     break;
                 }
             }

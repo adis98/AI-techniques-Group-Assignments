@@ -170,8 +170,6 @@ public class Group60Party extends DefaultParty {
 	//to get the set of bids on ParetoFrontier
 	public Set<Bid> getOptimalPointsInParetoFrontier(List<UtilitySpace> listOfProfiles) {
 		GenericParetoModified pareto = new GenericParetoModified(listOfProfiles);
-		System.out.println("########################");
-		System.out.println(pareto);
 		return pareto.getOptimalBids();
 	}
 
@@ -351,8 +349,6 @@ public class Group60Party extends DefaultParty {
 		}
 		listOfProfiles.add((UtilitySpace) profileint.getProfile());
 		Group60Party gp = new Group60Party();
-		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-		System.out.println(listOfProfiles);
 		Set<Bid> optimalPoints = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
 		mostRecentOptimalPoints = optimalPoints;
 		Object val = settings.getParameters().get("minPower");
