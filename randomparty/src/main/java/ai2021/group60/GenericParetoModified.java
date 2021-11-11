@@ -1,4 +1,4 @@
-package collabai.group60;
+package ai2021.group60;
 
 import java.math.BigDecimal;
 import java.util.*;

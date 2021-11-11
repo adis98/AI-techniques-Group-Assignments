@@ -1,4 +1,4 @@
-package collabai.group60;
+package ai2021.group60;
 
 import java.io.IOException;
 import java.math.BigInteger;

@@ -1,4 +1,4 @@
-package collabai.group60;
+package ai2021.group60;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,7 +26,6 @@ import geniusweb.issuevalue.Value;
 import geniusweb.opponentmodel.FrequencyOpponentModel;
 import geniusweb.profile.utilityspace.UtilitySpace;
 import geniusweb.profileconnection.ProfileInterface;
-import geniusweb.progress.Progress;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -194,7 +194,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>collabai.group60.Group60Party</mainClass>
+							<mainClass>ai2021.group60.Group60Party</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -249,7 +249,7 @@
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							<mainClass>collabai.group60.Group60Party</mainClass>
+							<mainClass>ai2021.group60.Group60Party</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
