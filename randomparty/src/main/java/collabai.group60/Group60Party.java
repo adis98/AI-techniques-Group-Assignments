@@ -74,10 +74,11 @@ public class Group60Party extends DefaultParty {
 	private String protocol;
 	private Integer Pmax = Integer.MAX_VALUE;
 	private Map<PartyId, Integer> oppPowers;
-	private Map<PartyId, FrequencyOpponentModel> opponentModelMap = new HashMap<PartyId,FrequencyOpponentModel>();
+	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
 	private Set<Bid> mostRecentOptimalPoints = null;
 	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
 	protected double reservationValue;
+	protected double threshold = 0.8;
 
 	public Group60Party() {
 	}
@@ -96,7 +97,11 @@ public class Group60Party extends DefaultParty {
 				this.settings = sett;
 				this.protocol = sett.getProtocol().getURI().getPath();
 				Object val = sett.getParameters().get("reservationValue");
-				this.reservationValue = (val instanceof Double) ? (Double) val : 0.7;
+				try {
+					this.reservationValue = (val instanceof Double) ? (Double) val : 0.7;
+				} catch (Exception e) {
+					this.reservationValue = 0.7;
+				}
 				if ("Learn".equals(protocol)) {
 					getConnection().send(new LearningDone(me));
 				} else {
@@ -360,6 +365,7 @@ public class Group60Party extends DefaultParty {
 				.filter(offer -> acceptOffer(offer.getBid(), optimalPoints))
 				.map(offer -> new Vote(me, offer.getBid(), minpower, maxpower))
 				.collect(Collectors.toSet());
+		this.threshold = this.threshold * 0.95;
 		return new Votes(me, votes);
 	}
 
@@ -373,15 +379,22 @@ public class Group60Party extends DefaultParty {
 		double util = 0;
 		if (profile instanceof UtilitySpace)
 			util = ((UtilitySpace) profile).getUtility(bid).doubleValue();
-		if (bidWithThresholdOfOptimality(optimalPoints, bid, 0.8) && (util > this.reservationValue)) {
-			return true;
-		} else {
-			return false;
+		UtilitySpace ourProfile;
+		try {
+			ourProfile = (UtilitySpace) this.profileint.getProfile();
+		} catch (Exception e) {
+			ourProfile = null;
 		}
-
+		return bidWithThresholdOfOptimality(optimalPoints, bid, this.threshold, ourProfile) && (util > this.reservationValue);
 	}
 
-	public Boolean bidWithThresholdOfOptimality(Set<Bid> optimalPoints, Bid bid, Double threshold) {
+	public Boolean bidWithThresholdOfOptimality(Set<Bid> optimalPoints, Bid bid, Double threshold, UtilitySpace ourProfile) {
+		if(ourProfile != null) {
+			double ourUtility = ourProfile.getUtility(bid).doubleValue();
+			if (ourUtility > threshold) {
+				return true;
+			}
+		}
 		return optimalPoints.stream().anyMatch(optimalBid -> {
 			Map<String, Value> issueValues = bid.getIssueValues();
 			return issueValues.keySet().stream().allMatch(issue -> {
@@ -393,9 +406,7 @@ public class Group60Party extends DefaultParty {
 				if (optimalIssueValue instanceof NumberValue && bidIssueValue instanceof NumberValue) {
 					double denom = Math.max(((NumberValue) optimalIssueValue).getValue().doubleValue(), ((NumberValue) bidIssueValue).getValue().doubleValue());
 					double numer = Math.min(((NumberValue) optimalIssueValue).getValue().doubleValue(), ((NumberValue) bidIssueValue).getValue().doubleValue());
-					if (numer / denom >= threshold) {
-						return true;
-					}
+					return numer / denom >= threshold;
 				} else if (optimalIssueValue instanceof DiscreteValue && bidIssueValue instanceof DiscreteValue) {
 					return ((DiscreteValue) optimalIssueValue).getValue().equals(((DiscreteValue) bidIssueValue).getValue());
 				}

@@ -68,7 +68,7 @@ public class Group60PartyTest {
 	private static final PartyId PARTY1 = new PartyId("party1");
 	private static final String SAOP = "SAOP";
 	private static final PartyId otherparty = new PartyId("other");
-	private static final String PROFILE = "src/test/resources/party3.json";
+	private static final String PROFILE = "src/test/resources/testprofile.json";
 	private static final String PROFILE1 = "src/test/resources/testprofile.json";
 	private static final String PROFILE2 = "src/test/resources/testprofile2.json";
 	private final static ObjectMapper jackson = new ObjectMapper();
@@ -179,17 +179,22 @@ public class Group60PartyTest {
 		issuevalues.put("issue1", new DiscreteValue("issue1value1"));
 		Bid testBid3 = new Bid(issuevalues);
 
+		issuevalues.put("issue2", new NumberValue(new BigDecimal(32)));
+		issuevalues.put("issue1", new DiscreteValue("issue1value2"));
+		Bid testBid4 = new Bid(issuevalues);
+
 		Set<Bid> paretoFrontier = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
 		System.out.println(paretoFrontier);
-		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid1, 0.8));
-		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid2, 0.8));
-		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid3, 0.8));
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid1, 0.8, profile1));
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid2, 0.8, profile1));
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid3, 0.8, profile1));
+		System.out.println(gp.bidWithThresholdOfOptimality(paretoFrontier, testBid4, 0.8, profile1));
 
 	}
 
 	@Test
 	public void getParetoFrontierWithFrequencyOpponentModel() throws Exception {
-		final String profile1 = "src/test/resources/party1.json";
+		final String profile1 = "src/test/resources/testprofile.json";
 
 		String serialized1 = new String(Files.readAllBytes(Paths.get(profile1)),
 				StandardCharsets.UTF_8);
