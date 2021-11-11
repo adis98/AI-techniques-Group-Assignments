@@ -1,0 +1,108 @@
+{
+	"LinearAdditiveUtilitySpace": {
+		"issueUtilities": {
+			"Climate Change": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Prevent": 0.66,
+						"Cannot be prevented": 1,
+						"Does not exist": 0.33
+					}
+				}
+			},
+			"Monarchy": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Give more power": 0,
+						"Maintain with same power": 1,
+						"Become a republic": 0.5
+					}
+				}
+			},
+			"Covid Measures": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Complete lockdown": 0.1,
+						"Social Distance": 0.4,
+						"No restrictions": 0.3
+					}
+				}
+			},
+			"Labour": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Increase minimum wage": 1,
+						"Increase taxes on companies": 0.8,
+						"Decrease taxes on companies": 0
+					}
+				}
+			},
+			"European Union": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Exit": 0,
+						"Remain": 1
+					}
+				}
+			}
+
+		},
+		"issueWeights": {
+			"Climate Change": 0.1,
+			"Monarchy": 0.3,
+			"Covid Measures": 0.4,
+			"Labour": 0.1,
+			"European Union": 0.1
+		},
+		"domain": {
+			"name": "politicalparty",
+			"issuesValues": {
+				"Climate Change": {
+					"values": [
+						"Prevent",
+						"Cannot be prevented",
+						"Does not exist"
+					]
+				},
+				"Monarchy": {
+					"values": [
+						"Give more power",
+						"Maintain with same power",
+						"Become a republic"
+					]
+				},
+				"Covid Measures": {
+					"values": [
+						"Complete lockdown",
+						"Social Distance",
+						"No restrictions"
+					]
+				},
+				"Labour": {
+					"values": [
+						"Increase minimum wage",
+						"Increase taxes on companies",
+						"Decrease taxes on companies"
+					]
+				},
+				"European Union": {
+					"values": [
+						"Exit",
+						"Remain"
+					]
+				}
+			}
+		},
+		"name": "party2",
+		"reservationBid": {
+			"issuevalues": {
+				"Climate Change": "Cannot be prevented",
+				"Monarchy": "Maintain with same power",
+				"Covid Measures": "Complete lockdown",
+				"Labour": "Increase minimum wage",
+				"European Union": "Remain"
+			}
+		},
+		"power": 80
+	}
+}

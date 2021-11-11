@@ -1,0 +1,108 @@
+{
+	"LinearAdditiveUtilitySpace": {
+		"issueUtilities": {
+			"Climate Change": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Prevent": 0.2,
+						"Cannot be prevented": 0.6,
+						"Does not exist": 1
+					}
+				}
+			},
+			"Monarchy": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Give more power": 1,
+						"Maintain with same power": 0.8,
+						"Become a republic": 0
+					}
+				}
+			},
+			"Covid Measures": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Complete lockdown": 0,
+						"Social Distance": 0.4,
+						"No restrictions": 1
+					}
+				}
+			},
+			"Labour": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Increase minimum wage": 0.2,
+						"Increase taxes on companies": 0.2,
+						"Decrease taxes on companies": 1
+					}
+				}
+			},
+			"European Union": {
+				"DiscreteValueSetUtilities": {
+					"valueUtilities": {
+						"Exit": 1,
+						"Remain": 0
+					}
+				}
+			}
+
+		},
+		"issueWeights": {
+			"Climate Change": 0.05,
+			"Monarchy": 0.2,
+			"Covid Measures": 0.05,
+			"Labour": 0.2,
+			"European Union": 0.5
+		},
+		"domain": {
+			"name": "politicalparty",
+			"issuesValues": {
+				"Climate Change": {
+					"values": [
+						"Prevent",
+						"Cannot be prevented",
+						"Does not exist"
+					]
+				},
+				"Monarchy": {
+					"values": [
+						"Give more power",
+						"Maintain with same power",
+						"Become a republic"
+					]
+				},
+				"Covid Measures": {
+					"values": [
+						"Complete lockdown",
+						"Social Distance",
+						"No restrictions"
+					]
+				},
+				"Labour": {
+					"values": [
+						"Increase minimum wage",
+						"Increase taxes on companies",
+						"Decrease taxes on companies"
+					]
+				},
+				"European Union": {
+					"values": [
+						"Exit",
+						"Remain"
+					]
+				}
+			}
+		},
+		"name": "party3",
+		"reservationBid": {
+			"issuevalues": {
+				"Climate Change": "Does not exist",
+				"Monarchy": "Maintain with same power",
+				"Covid Measures": "No restrictions",
+				"Labour": "Decrease taxes on companies",
+				"European Union": "Exit"
+			}
+		},
+		"power": "30"
+	}
+}
