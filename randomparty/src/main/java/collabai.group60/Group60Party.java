@@ -74,7 +74,7 @@ public class Group60Party extends DefaultParty {
 	private String protocol;
 	private Integer Pmax = Integer.MAX_VALUE;
 	private Map<PartyId, Integer> oppPowers;
-	private Map<PartyId, FrequencyOpponentModel> opponentModelMap;
+	private Map<PartyId, FrequencyOpponentModel> opponentModelMap = new HashMap<PartyId,FrequencyOpponentModel>();
 	private Set<Bid> mostRecentOptimalPoints = null;
 	private boolean firstBid = true; //this is true if we're just starting the session. Can be used to initialize array sizes etc.
 	protected double reservationValue;
@@ -165,6 +165,8 @@ public class Group60Party extends DefaultParty {
 	//to get the set of bids on ParetoFrontier
 	public Set<Bid> getOptimalPointsInParetoFrontier(List<UtilitySpace> listOfProfiles) {
 		GenericParetoModified pareto = new GenericParetoModified(listOfProfiles);
+		System.out.println("########################");
+		System.out.println(pareto);
 		return pareto.getOptimalBids();
 	}
 
@@ -322,18 +324,21 @@ public class Group60Party extends DefaultParty {
 				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
 				PartyId partyId = voting.getOffers().get(i).getActor();
 				opponentModelMap.put(partyId, temp);
+				FrequencyOpponentModel OM = opponentModelMap.get(partyId);
+				OM = OM.with(voting.getOffers().get(i), progress);
+				opponentModelMap.replace(partyId, OM);
 			}
 			firstBid = false;
 		} else {
 			for (int i = 0; i < voting.getOffers().size(); i++) {
-				FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
+				//FrequencyOpponentModel temp = new FrequencyOpponentModel().with(profileint.getProfile().getDomain(), null);
 				PartyId partyId = voting.getOffers().get(i).getActor();
 				FrequencyOpponentModel OM = opponentModelMap.get(partyId);
 				OM = OM.with(voting.getOffers().get(i), progress);
 				opponentModelMap.replace(partyId, OM);
 			}
 		}
-		List<UtilitySpace> listOfProfiles = Arrays.asList();
+		List<UtilitySpace> listOfProfiles = new ArrayList<>();
 		for (PartyId key : opponentModelMap.keySet()) {
 			if (!key.equals(profileint)) {
 				listOfProfiles.add(opponentModelMap.get(key));
@@ -341,6 +346,8 @@ public class Group60Party extends DefaultParty {
 		}
 		listOfProfiles.add((UtilitySpace) profileint.getProfile());
 		Group60Party gp = new Group60Party();
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		System.out.println(listOfProfiles);
 		Set<Bid> optimalPoints = gp.getOptimalPointsInParetoFrontier(listOfProfiles);
 		mostRecentOptimalPoints = optimalPoints;
 		Object val = settings.getParameters().get("minPower");

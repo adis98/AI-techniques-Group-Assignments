@@ -95,13 +95,18 @@ public class GenericParetoModified implements ParetoFrontier {
      */
     private void computePareto() {
         paretobids = new HashSet<Bid>();
-
-        for (Bid newbid : new AllBidsList(profiles.get(0).getDomain())) {
+        AllBidsList bids = new AllBidsList(profiles.get(0).getDomain());
+        System.out.println(bids);
+        int counter = 0;
+        for (Bid newbid : bids) {
             /*
              * invariant: paretobids contains bids not dominated by other bids
              * in paretobids. That means we need (1) check if new bid is
              * dominated (2) if existing bids are dominated if we add a new bid
              */
+            if(counter == 1000000){
+                break;
+            }
             boolean newBidIsDominated = paretobids.stream()
                     .anyMatch(paretobid -> isDominatedBy(newbid, paretobid));
 
@@ -113,6 +118,7 @@ public class GenericParetoModified implements ParetoFrontier {
                         .collect(Collectors.toSet());
                 paretobids.add(newbid);
             }
+            counter++;
         }
     }
 
