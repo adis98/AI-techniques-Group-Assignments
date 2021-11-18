@@ -1,1 +1,0 @@
-# AI-techniques-Group-Assignments
