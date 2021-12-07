@@ -1,8 +1,10 @@
 import simple_grid
 from q_learning_skeleton import *
 import gym
+import matplotlib.pyplot as plt
 
 def act_loop(env, agent, num_episodes):
+    timesteps = []
     for episode in range(num_episodes):
         state = env.reset()
         agent.reset_episode()
@@ -23,6 +25,7 @@ def act_loop(env, agent, num_episodes):
                 print('---stage %d---' % t)
                 agent.report()
                 print("state:", state)
+                env.render()
 
             action = agent.select_action(state)
             new_state, reward, done, info = env.step(action)
@@ -34,16 +37,26 @@ def act_loop(env, agent, num_episodes):
             state = new_state
             if done:
                 print("Episode finished after {} timesteps".format(t+1))
+                timesteps.append(t+1)
                 env.render()
                 agent.report()
                 break
-
     env.close()
+    '''
+    plt.plot(timesteps)
+    plt.title("The alley")
+    plt.ylabel("Number of timesteps")
+    plt.xlabel("Episode")
+    plt.savefig("the_alley")
+    plt.show()
+
+    np.savetxt("policy_alley.csv", agent.Q)
+    '''
 
 
 if __name__ == "__main__":
-    env = simple_grid.DrunkenWalkEnv(map_name="walkInThePark")
-    # env = simple_grid.DrunkenWalkEnv(map_name="theAlley")
+    #env = simple_grid.DrunkenWalkEnv(map_name="walkInThePark")
+    env = simple_grid.DrunkenWalkEnv(map_name="theAlley")
     num_a = env.action_space.n
 
     if (type(env.observation_space)  == gym.spaces.discrete.Discrete):
