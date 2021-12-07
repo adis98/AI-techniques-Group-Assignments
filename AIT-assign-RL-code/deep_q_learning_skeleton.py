@@ -1,7 +1,6 @@
 import numpy as np
 import gym
 import random
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -28,15 +27,42 @@ class ReplayMemory(object):
     # ReplayMemory should store the last "size" experiences
     # and be able to return a randomly sampled batch of experiences
     def __init__(self, size):
-        pass #<- TODO: you need to modify this
+
+        self.cache = {}
+        self.pointer = 0
+        self.size = size
+        self.full = False
+        #pass #<- TODO: you need to modify this
 
     # Store experience in memory
     def store_experience(self, prev_obs, action, observation, reward, done):
-        pass #<- TODO: you need to modify this
+
+        self.cache[self.pointer] = [prev_obs,action,observation,reward,done]
+        self.pointer = (self.pointer + 1)%self.size
+        if(self.pointer == 0):
+            self.full = True
+        #pass #<- TODO: you need to modify this
 
     # Randomly sample "batch_size" experiences from the memory and return them
     def sample_batch(self, batch_size):
-        pass #<- TODO: you need to modify this
+
+        prev_obs = []
+        acts = []
+        obs = []
+        rewards = []
+        dones = []
+        for i in range(batch_size):
+            if(self.full == True):
+                index = random.randint(0,self.size-1)
+            else:
+                index = random.randint(0,self.pointer-1)
+            prev_obs.append(self.cache[index][0])
+            acts.append(self.cache[index][1])
+            obs.append(self.cache[index][2])
+            rewards.append(self.cache[index][3])
+            dones.append(self.cache[index][4])
+        return prev_obs,acts,obs,rewards,dones
+        #pass #<- TODO: you need to modify this
 
 
 # DEBUG=True
@@ -70,7 +96,7 @@ class QNet(nn.Module):
 
         if batch_size > 1:
             v,_ = Qs.max(dim=1)
-        else: 
+        else:
             v = Qs.max()
         v = v.detach().numpy()
         #print ("... Vs: %s" % v)
@@ -82,7 +108,7 @@ class QNet(nn.Module):
         t_Qs = self.forward(observation) #<- this should feed in the input
 
         #NOOO! this will *not* randomly break ties(!)...
-        # m = np.argmax(self.data[observation, :]) 
+        # m = np.argmax(self.data[observation, :])
         #instead:
         Qs = t_Qs.detach().numpy()
         if DEBUG:
@@ -112,14 +138,14 @@ class QNet(nn.Module):
         t_prev_observation = self.obs_to_tensor(prev_observation)
 
         if done:
-            future_val = 0 
+            future_val = 0
         else:
             future_val = self.max_Q_value(t_observation)        ##<<- this evaluates the QNet
-        # We just evaluated the Qnet for the next-stage variables, but of course... the effect of the Qnet 
-        # parameters on the *next-stage* value is ignored by Q-learning. 
-        # (residual gradient algorithms do takes this into account, but 
+        # We just evaluated the Qnet for the next-stage variables, but of course... the effect of the Qnet
+        # parameters on the *next-stage* value is ignored by Q-learning.
+        # (residual gradient algorithms do takes this into account, but
         #   formally need 2 successor state samples)
-        # So... we need to reset the gradients. (otherwise they accumulate e.g., see; 
+        # So... we need to reset the gradients. (otherwise they accumulate e.g., see;
         # https://medium.com/@zhang_yang/how-pytorch-tensors-backward-accumulates-gradient-8d1bf675579b)
         self.zero_grad()
 
@@ -235,13 +261,20 @@ class QLearner(object):
         self.cum_r += reward
         self.dis_r += reward * (self.discount ** self.stage)
         self.stage += 1
-        self.Q.single_Q_update(prev_observation, action, observation, reward, done)
-        self.last_obs = observation
+        #self.Q.batch_Q_update(prev_observation, action, observation, reward, done)
+        #self.Q.batch_Q_update(np.array(prev_observation), np.array(action), np.array(observation), np.array(reward), np.array(done))
 
-        # TODO coding exercise 3: Do a batch update using experience stored in the replay memory
-        # if self.tot_stages > 10 * self.batch_size:
+        if self.tot_stages > 10 * self.batch_size:
             # sample a batch of batch_size from the replay memory
+            prev_obs,acts,obs,rewards,dones = self.rm.sample_batch(self.batch_size)
+            self.Q.batch_Q_update(np.array(prev_obs), np.array(acts), np.array(obs), np.array(rewards), np.array(dones))
+            #self.Q.single_Q_update(prev_observation, action, observation, reward, done)
             # and update the network using this batch (batch_Q_update)
+        else:
+            self.Q.single_Q_update(prev_observation, action, observation, reward, done)
+        self.last_obs = observation
+        self.rm.store_experience(prev_observation, action, observation, reward, done)
+
 
 
     def select_action(self):
