@@ -280,7 +280,7 @@ class QLearner(object):
         else:
             self.Q.single_Q_update(prev_observation, action, observation, reward, done, target = self.Qtarget) #added additional parameter for
         self.last_obs = observation
-        self.Qtarget.load_state_dict(self.Q.state_dict()) #to make theta_target = theta_Q_network
+        
 
 
 
