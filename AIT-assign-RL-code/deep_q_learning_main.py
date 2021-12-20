@@ -49,7 +49,7 @@ def act_loop(env, agent, num_episodes):
                 agent.report()
                 break
 
-    agent.Qtarget.load_state_dict(self.Q.state_dict()) #to make theta_target = theta_Q_network
+    agent.Qtarget.load_state_dict(agent.Q.state_dict()) #to make theta_target = theta_Q_network
     env.close()
 
 
