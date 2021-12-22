@@ -8,6 +8,7 @@ MAX_EPISODE_LENGTH = 500
 
 DEFAULT_DISCOUNT = 0.9
 EPSILON = 0.05
+BETA = 800
 LEARNINGRATE = 0.1
 
 
@@ -58,16 +59,16 @@ class QLearner():
         
         #softmax
         if random.uniform(0,1) < EPSILON:
-            allQExp_valuesSum = np.sum(np.exp(-(self.Q[state,:])))
+            allQExp_valuesSum = np.sum(np.exp(np.true_divide((self.Q[state,:]), BETA)))
             allWeights = []
             for a in range(0, self.num_actions-1):
                 q_value = self.Q[state,a]
-                eachWeight = np.true_divide(np.exp(-q_value), allQExp_valuesSum)
+                eachWeight = np.true_divide(np.exp(np.true_divide(q_value, BETA)), allQExp_valuesSum)
                 allWeights.append(eachWeight)
             allWeightsCDF = np.cumsum(allWeights)
             randIntForSoftMax = random.uniform(0,1) 
             for i in range(0,self.num_actions-1):
-                if(randIntForSoftMax <= allWeightsCDF[i] and randIntForSoftMax > 0):
+                if((i == 0) and (randIntForSoftMax <= allWeightsCDF[i] and randIntForSoftMax > 0)):
                     return i
                 if(randIntForSoftMax <= allWeightsCDF[i] and randIntForSoftMax > allWeightsCDF[i-1]):
                     return i

@@ -42,7 +42,7 @@ def act_loop(env, agent, num_episodes):
                 agent.report()
                 break
     env.close()
-    '''
+    
     plt.plot(timesteps)
     plt.title("The alley")
     plt.ylabel("Number of timesteps")
@@ -50,12 +50,12 @@ def act_loop(env, agent, num_episodes):
     plt.savefig("the_alley")
     plt.show()
 
-    np.savetxt("policy_alley.csv", agent.Q)
-    '''
+    np.savetxt("policy_alley_softmax3.csv", agent.Q)
+    
 
 
 if __name__ == "__main__":
-    #env = simple_grid.DrunkenWalkEnv(map_name="walkInThePark")
+    # env = simple_grid.DrunkenWalkEnv(map_name="walkInThePark")
     env = simple_grid.DrunkenWalkEnv(map_name="theAlley")
     num_a = env.action_space.n
 
