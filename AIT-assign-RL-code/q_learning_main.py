@@ -42,7 +42,7 @@ def act_loop(env, agent, num_episodes):
                 agent.report()
                 break
     env.close()
-    '''
+
     plt.plot(timesteps)
     plt.title("The alley")
     plt.ylabel("Number of timesteps")
@@ -50,8 +50,7 @@ def act_loop(env, agent, num_episodes):
     plt.savefig("the_alley")
     plt.show()
 
-    np.savetxt("policy_alley.csv", agent.Q)
-    '''
+    np.savetxt("policy_alley_q_learning.csv", agent.Q)
 
 
 if __name__ == "__main__":
@@ -67,6 +66,9 @@ if __name__ == "__main__":
 
     discount = DEFAULT_DISCOUNT
     ql = QLearner(num_o, num_a, discount) #<- QTable
+    Q_star = ql.value_iteration(env)
+    np.savetxt("optimal_policy_alley.csv", Q_star)
     act_loop(env, ql, NUM_EPISODES)
+
 
 
