@@ -9,6 +9,7 @@ MAX_EPISODE_LENGTH = 500
 
 DEFAULT_DISCOUNT = 0.9
 EPSILON = 0.05
+BETA = 800
 LEARNINGRATE = 0.1
 
 
@@ -53,8 +54,25 @@ class QLearner():
         Returns an action, selected based on the current state
         """
 
+        #Epsilon greedy
+        # if random.uniform(0,1) < EPSILON:
+        #     return random.randint(0,self.num_actions-1)
+        
+        #softmax
         if random.uniform(0,1) < EPSILON:
-            return random.randint(0,self.num_actions-1)
+            allQExp_valuesSum = np.sum(np.exp(np.true_divide((self.Q[state,:]), BETA)))
+            allWeights = []
+            for a in range(0, self.num_actions-1):
+                q_value = self.Q[state,a]
+                eachWeight = np.true_divide(np.exp(np.true_divide(q_value, BETA)), allQExp_valuesSum)
+                allWeights.append(eachWeight)
+            allWeightsCDF = np.cumsum(allWeights)
+            randIntForSoftMax = random.uniform(0,1) 
+            for i in range(0,self.num_actions-1):
+                if((i == 0) and (randIntForSoftMax <= allWeightsCDF[i] and randIntForSoftMax > 0)):
+                    return i
+                if(randIntForSoftMax <= allWeightsCDF[i] and randIntForSoftMax > allWeightsCDF[i-1]):
+                    return i
 
         q_max = np.max(self.Q[state,:])
         if q_max == 0: #In this case, none of the actions have been explored so we chose one at random

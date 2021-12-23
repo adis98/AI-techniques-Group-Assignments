@@ -50,11 +50,12 @@ def act_loop(env, agent, num_episodes):
     plt.savefig("the_alley")
     plt.show()
 
-    np.savetxt("policy_alley_q_learning.csv", agent.Q)
+    np.savetxt("policy_alley_softmax3.csv", agent.Q)
+
 
 
 if __name__ == "__main__":
-    #env = simple_grid.DrunkenWalkEnv(map_name="walkInThePark")
+    # env = simple_grid.DrunkenWalkEnv(map_name="walkInThePark")
     env = simple_grid.DrunkenWalkEnv(map_name="theAlley")
     num_a = env.action_space.n
 

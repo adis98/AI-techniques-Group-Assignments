@@ -1,3 +1,4 @@
+import collections
 import numpy as np
 import gym
 import random
@@ -27,42 +28,17 @@ class ReplayMemory(object):
     # ReplayMemory should store the last "size" experiences
     # and be able to return a randomly sampled batch of experiences
     def __init__(self, size):
+        self.cache = collections.deque(maxlen=size)
 
-        self.cache = {}
-        self.pointer = 0
-        self.size = size
-        self.full = False
-        #pass #<- TODO: you need to modify this
 
     # Store experience in memory
     def store_experience(self, prev_obs, action, observation, reward, done):
-
-        self.cache[self.pointer] = [prev_obs,action,observation,reward,done]
-        self.pointer = (self.pointer + 1)%self.size
-        if(self.pointer == 0):
-            self.full = True
-        #pass #<- TODO: you need to modify this
+        self.cache.append([prev_obs,action,observation,reward,done])
 
     # Randomly sample "batch_size" experiences from the memory and return them
     def sample_batch(self, batch_size):
-
-        prev_obs = []
-        acts = []
-        obs = []
-        rewards = []
-        dones = []
-        for i in range(batch_size):
-            if(self.full == True):
-                index = random.randint(0,self.size-1)
-            else:
-                index = random.randint(0,self.pointer-1)
-            prev_obs.append(self.cache[index][0])
-            acts.append(self.cache[index][1])
-            obs.append(self.cache[index][2])
-            rewards.append(self.cache[index][3])
-            dones.append(self.cache[index][4])
-        return prev_obs,acts,obs,rewards,dones
-        #pass #<- TODO: you need to modify this
+        indices = np.random.choice(len(self.cache), batch_size, replace=False)
+        return zip(*[self.cache[i] for i in indices])
 
 
 # DEBUG=True
@@ -280,7 +256,7 @@ class QLearner(object):
         else:
             self.Q.single_Q_update(prev_observation, action, observation, reward, done, target = self.Qtarget) #added additional parameter for
         self.last_obs = observation
-        self.Qtarget.load_state_dict(self.Q.state_dict()) #to make theta_target = theta_Q_network
+        
 
 
 
