@@ -3,7 +3,7 @@ import random
 from simple_grid import REWARD
 import numpy as np
 
-NUM_EPISODES = 10000
+NUM_EPISODES = 1000
 MAX_EPISODE_LENGTH = 500
 
 
