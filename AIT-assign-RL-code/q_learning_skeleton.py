@@ -19,7 +19,7 @@ class QLearner():
     """
     Q-learning agent
     """
-    def __init__(self, num_states, num_actions, discount=DEFAULT_DISCOUNT, learning_rate=LEARNINGRATE): 
+    def __init__(self, num_states, num_actions, discount=DEFAULT_DISCOUNT, learning_rate=LEARNINGRATE):
         self.name = "agent1"
         self.num_states = num_states
         self.num_actions = num_actions
@@ -38,7 +38,7 @@ class QLearner():
 
 
 
-    def process_experience(self, state, action, next_state, reward, done): 
+    def process_experience(self, state, action, next_state, reward, done):
         """
         Update the Q-value based on the state, action, next state and reward.
         """
@@ -49,7 +49,7 @@ class QLearner():
 
 
 
-    def select_action(self, state): 
+    def select_action(self, state):
         """
         Returns an action, selected based on the current state
         """
@@ -57,7 +57,7 @@ class QLearner():
         #Epsilon greedy
         # if random.uniform(0,1) < EPSILON:
         #     return random.randint(0,self.num_actions-1)
-        
+
         #softmax
         if random.uniform(0,1) < EPSILON:
             allQExp_valuesSum = np.sum(np.exp(np.true_divide((self.Q[state,:]), BETA)))
@@ -67,7 +67,7 @@ class QLearner():
                 eachWeight = np.true_divide(np.exp(np.true_divide(q_value, BETA)), allQExp_valuesSum)
                 allWeights.append(eachWeight)
             allWeightsCDF = np.cumsum(allWeights)
-            randIntForSoftMax = random.uniform(0,1) 
+            randIntForSoftMax = random.uniform(0,1)
             for i in range(0,self.num_actions-1):
                 if((i == 0) and (randIntForSoftMax <= allWeightsCDF[i] and randIntForSoftMax > 0)):
                     return i
@@ -88,21 +88,21 @@ class QLearner():
         return a_max
 
     def value_iteration(self, env, error = 1e-10):
-        Q_new, Q_old, R = np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions))
-        R[self.num_states-1,:] = REWARD
-        for t in range(NUM_EPISODES):
-            Q_old = copy.deepcopy(Q_new)
-            delta = 0
-            for s in range(0,self.num_states):
-                for a in range(0,self.num_actions):
-                    value = 0
-                    for i in env.P[s][a]:
-                        value += i[0]*np.max(Q_old[i[1],:])
-                    Q_new[s,a] = R[s,a] + LEARNINGRATE*value
-                    delta = max(delta, abs(Q_old[s,a]-Q_new[s,a]))
-            if delta < error:
-                break
-        return Q_new
+            Q_new, Q_old, R = np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions))
+            #R[self.num_states-1,:] = REWARD
+            for t in range(NUM_EPISODES):
+                Q_old = copy.deepcopy(Q_new)
+                delta = 0
+                for s in range(0,self.num_states-1):
+                    for a in range(0,self.num_actions):
+                        value = 0
+                        for i in env.P[s][a]:
+                            value += i[0]*(i[2]+ DEFAULT_DISCOUNT*np.max(Q_old[i[1],:]))
+                        Q_new[s,a] = value
+                        delta = max(delta, abs(Q_old[s,a]-Q_new[s,a]))
+                if delta < error:
+                    break
+            return Q_new
 
     def report(self):
         """
@@ -110,10 +110,3 @@ class QLearner():
         """
 
         #print(self.Q)
-
-
-
-
-
-
-        

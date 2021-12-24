@@ -70,6 +70,3 @@ if __name__ == "__main__":
     Q_star = ql.value_iteration(env)
     np.savetxt("optimal_policy_alley.csv", Q_star)
     act_loop(env, ql, NUM_EPISODES)
-
-
-
