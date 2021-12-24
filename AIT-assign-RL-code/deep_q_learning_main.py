@@ -1,16 +1,18 @@
 import gym
-
 from deep_q_learning_skeleton import *
+from pandas import *
 
 # Set to true if you want the agent to take into account the remaining time
 # (an episode automatically stops after 1000 timesteps)
 timeHorizon = True
 
 def act_loop(env, agent, num_episodes):
+    ind_rows = []
+    cum_rows = []
     for episode in range(num_episodes):
         observation = env.reset()
         if timeHorizon:
-            observation = np.append(observation,1)
+            observation = np.append(observation, 1)
         agent.reset_episode(observation)
 
         print('---episode %d---' % episode)
@@ -36,7 +38,7 @@ def act_loop(env, agent, num_episodes):
             action = agent.select_action()
             observation, reward, done, info = env.step(action)
             if timeHorizon:
-                timeRemaining = (1000 - t) / 1000 # goes from 1 at first timestep to 0 at last timestep
+                timeRemaining = (1000 - t) / 1000  # goes from 1 at first timestep to 0 at last timestep
                 observation = np.append(observation, timeRemaining)
             if printing:
                 print("act:", action)
@@ -44,12 +46,16 @@ def act_loop(env, agent, num_episodes):
 
             agent.process_experience(action, observation, reward, done)
             if done:
-                print("Episode finished after {} timesteps".format(t+1))
+                print("Episode finished after {} timesteps".format(t + 1))
                 env.render()
-                agent.report()
+                mean_r_this_ep, mean_r = agent.report()
+                agent.Qtarget.load_state_dict(agent.Q.state_dict())  # to make theta_target = theta_Q_network
+                if episode != 0:
+                    ind_rows.append(mean_r_this_ep)
+                    cum_rows.append(mean_r)
                 break
-
-    agent.Qtarget.load_state_dict(agent.Q.state_dict()) #to make theta_target = theta_Q_network
+    a = np.transpose(np.asarray([ind_rows, cum_rows]))
+    pandas.DataFrame(a).to_csv("out_3.csv")
     env.close()
 
 
@@ -68,9 +74,9 @@ if __name__ == "__main__":
 
     discount = DEFAULT_DISCOUNT
 
-    ql = QLearner(env, qn, discount) #<- QNet
+    # ql = QLearner(env, qn, discount)  # <- QNet
 
-    #TODO: Coding exercise 4: target network
+    # TODO: Coding exercise 4: target network
     target_qn = QNet_MLP(num_a, shape_o)
     target_qn.load_state_dict(qn.state_dict())
     ql = QLearner(env, qn, target_qn, discount)  # <- QNet

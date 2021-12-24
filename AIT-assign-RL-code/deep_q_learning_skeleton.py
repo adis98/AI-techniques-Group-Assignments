@@ -295,3 +295,4 @@ class QLearner(object):
         print("%s: mean r in this episode:  %s" % (name, mean_r_this_ep))
         print("%s: mean r in lifetime:      %s" % (name, mean_r))
         print("%s: mean return per episode:   %s" % (name, mean_r_ep))
+        return mean_r_this_ep, mean_r
