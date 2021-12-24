@@ -88,8 +88,7 @@ class QLearner():
         return a_max
 
     def value_iteration(self, env, error = 1e-10):
-            Q_new, Q_old, R = np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions))
-            #R[self.num_states-1,:] = REWARD
+            Q_new, Q_old = np.zeros((self.num_states, self.num_actions)), np.zeros((self.num_states, self.num_actions))
             for t in range(NUM_EPISODES):
                 Q_old = copy.deepcopy(Q_new)
                 delta = 0
